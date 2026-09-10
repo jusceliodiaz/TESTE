@@ -45,6 +45,10 @@ Styling ([assets/css/style.css](assets/css/style.css)) is one file built around 
 - Comments in the JS/CSS are a mix of English and Portuguese; match whichever language a given comment block already uses when editing nearby.
 - There is no Specs/delivery section (removed by request) — the `.spec` table CSS and the `downloads/` PDF/MP4 links that lived only in that section were removed along with it. Nav no longer has a `#specs` entry; the `01 3D` link now carries the `nav__link--cta` styling that `Specs` used to have.
 
+## Sharing / SEO meta
+
+`index.html`'s `<head>` carries a full Open Graph + Twitter Card set (title, description, `og:site_name`, `og:locale`, canonical link) plus a dedicated share image: **`assets/img/og-interior.jpg`** (1200×630, cropped from `images/chair/interior.webp`, regenerated via Pillow — center-crop to a 1.91:1 ratio then resize, not a straight resize, so nothing gets squashed). If the interior render changes, regenerate that crop rather than hand-editing it, and keep `og:image`/`twitter:image` pointed at the same file. `<meta name="robots" content="noindex, nofollow">` only affects search engines — it does **not** block social/chat link-preview scrapers (Slack, WhatsApp, iMessage, LinkedIn, etc.), so share previews work correctly even while the page stays out of Google.
+
 ## Asset hygiene
 
 - Only files actually referenced by `index.html`/`main.js`/`viewer.js` should live under `images/` and `assets/img/` — this repo previously accumulated ~148MB of orphaned raw PNG exports and unused WIP folders (`assets/img/{interior,lowpoly,moods,research,sculpt,studio}`) that were never linked from the page; these were removed. Before adding new renders, wire them into a `<section class="sheet">`/`data-gallery` rather than dropping them in `images/chair/` unreferenced.

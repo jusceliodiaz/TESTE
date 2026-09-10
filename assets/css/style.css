@@ -159,7 +159,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .nav__menu{ display:flex; align-items:center; gap:clamp(.6rem,1.4vw,1.5rem); margin-left:auto; }
 .nav__link{
   position:relative;
-  font:var(--label); font-size:.64rem;
+  font:var(--label); font-size:.83rem;
   letter-spacing:.1em; text-transform:uppercase;
   color:var(--dim);
   padding:.6em 0;
@@ -596,7 +596,7 @@ body.is-locked{ overflow:hidden; }
     transform:translateY(-101%); transition:transform .45s var(--ease);
   }
   .nav__menu.is-open{ transform:none; }
-  .nav__link{ font-size:.95rem; letter-spacing:.06em; padding:.6rem 0; }
+  .nav__link{ font-size:1.24rem; letter-spacing:.06em; padding:.6rem 0; }
   .nav__link--cta{ margin-top:.7rem; }
 }
 
