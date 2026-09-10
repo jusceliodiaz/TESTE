@@ -1,0 +1,643 @@
+/* ============================================================
+   PLINTH / 001 — contact sheet
+   One 12-column sheet, hairline gutters, numbered plates.
+   Text is a cell in the grid, never a column of prose.
+   ============================================================ */
+
+:root{
+  color-scheme:dark;
+
+  /* surfaces */
+  --bg:        #0b0b0c;
+  --bg-2:      #101013;
+  --bg-3:      #17171c;
+  --line:      #24242a;
+  --line-2:    #35353d;
+
+  /* ink */
+  --txt:       #f1eee9;
+  --body:      #bdb9b3;
+  --muted:     #9b978f;
+  --dim:       #86827b;   /* smallest legible grey on --bg */
+
+  --accent:    #d5a76c;   /* walnut / brass */
+  --accent-2:  #8fb0d6;
+
+  --gut:       clamp(20px, 5vw, 72px);
+  --hair:      1px;       /* the only gutter on the sheet */
+  /* box inset: one value for every box on the sheet, so first lines align
+     across the hairlines. --pad-sm is for captions and tags only. */
+  --pad:       clamp(18px, 1.6vw, 26px);
+  --pad-sm:    clamp(11px, .9vw, 15px);
+  --r:         0px;       /* nothing is rounded here */
+
+  --ease:      cubic-bezier(.22,.61,.36,1);
+  --ease-out:  cubic-bezier(.16,1,.3,1);
+
+  /* same stacks as the 7mm studio site: SF Pro on Apple, Inter everywhere else */
+  --sans:      -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  --display:   -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+  --mono:      "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* one label recipe, reused by every index / key / tag on the page */
+  --label:     500 .68rem/1.3 var(--mono);
+  --label-ls:  .13em;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+
+html{
+  scroll-behavior:smooth; scroll-padding-top:57px; -webkit-text-size-adjust:100%;
+  scrollbar-width:thin; scrollbar-color:var(--line-2) var(--bg);
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--txt);
+  font-family:var(--sans);
+  font-weight:400;
+  font-size:clamp(15px,.98vw,16.5px);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+  counter-reset:plate;
+}
+
+/* film grain — keeps the flat dark from reading as plastic */
+body::after{
+  content:""; position:fixed; inset:0; z-index:150;
+  pointer-events:none; opacity:.032; mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@media (prefers-reduced-transparency:reduce){ body::after{ display:none; } }
+
+img,video{ display:block; max-width:100%; height:auto; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; }
+
+.sr-only{
+  position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+
+::selection{ background:var(--accent); color:#0b0b0c; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+
+/* ── Type ──────────────────────────────────────────────── */
+
+.h2{
+  font-family:var(--display);
+  font-weight:600;
+  font-size:clamp(1.4rem,1.9vw,1.9rem);
+  line-height:1.06;
+  letter-spacing:-.025em;
+  margin:0;
+  text-wrap:balance;
+}
+.h2 em{ font-style:normal; color:var(--accent); }
+
+/* the one line a section gets */
+.line{
+  margin:.7rem 0 0;
+  max-width:34ch;
+  color:var(--body);
+  font-size:.94rem;
+  line-height:1.5;
+  text-wrap:pretty;
+}
+
+.idx{
+  display:block; margin:0 0 1.1rem;
+  font:var(--label); font-size:.72rem; letter-spacing:.16em;
+  color:var(--accent);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ── Scroll progress ───────────────────────────────────── */
+
+.progress{
+  position:fixed; inset:0 0 auto 0; height:2px; z-index:120;
+  background:transparent; pointer-events:none;
+}
+.progress span{
+  display:block; height:100%; width:0;
+  background:var(--accent);
+  transition:width .1s linear;
+}
+/* native scroll-driven progress — takes the JS out of the paint path */
+@supports (animation-timeline:scroll()){
+  .progress span{
+    width:100%; transform-origin:0 50%; transform:scaleX(0);
+    transition:none;
+    animation:progress linear both;
+    animation-timeline:scroll(root block);
+  }
+  @keyframes progress{ from{ transform:scaleX(0) } to{ transform:scaleX(1) } }
+}
+
+/* ── Nav ───────────────────────────────────────────────── */
+
+.nav{
+  position:fixed; top:0; left:0; right:0; z-index:110;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:0 var(--gut); height:56px;
+  border-bottom:1px solid transparent;
+  transition:background .35s var(--ease), border-color .35s var(--ease);
+}
+.nav.is-solid{
+  background:rgba(11,11,12,.86);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom-color:var(--line);
+}
+
+/* sem a marca, o menu fica sozinho no flex — space-between colocaria ele
+   na esquerda por padrao (nao ha mais "entre" dois itens); margin-left:auto
+   mantem a direita independente de quantos irmaos existem */
+.nav__menu{ display:flex; align-items:center; gap:clamp(.6rem,1.4vw,1.5rem); margin-left:auto; }
+.nav__link{
+  position:relative;
+  font:var(--label); font-size:.64rem;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--dim);
+  padding:.6em 0;
+  transition:color .25s var(--ease);
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+.nav__link:hover,.nav__link.is-active{ color:var(--txt); }
+.nav__link::after{
+  content:""; position:absolute; left:0; right:0; bottom:.2em;
+  height:1px; background:var(--accent);
+  transform:scaleX(0); transform-origin:0 50%;
+  transition:transform .4s var(--ease-out);
+}
+.nav__link:hover::after{ transform:scaleX(.35); }
+.nav__link.is-active::after{ transform:scaleX(1); }
+.nav__link--cta{
+  border:1px solid var(--line-2); padding:.55em 1em; color:var(--txt);
+  transition:background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
+}
+.nav__link--cta::after{ display:none; }
+.nav__link--cta:hover{ background:var(--txt); border-color:var(--txt); color:#0b0b0c; }
+
+.nav__toggle{ display:none; width:44px; height:44px; position:relative; margin-right:-10px; }
+.nav__toggle span{
+  position:absolute; left:12px; right:12px; height:1px; background:var(--txt);
+  transition:transform .3s var(--ease);
+}
+.nav__toggle span:nth-child(1){ top:20px; }
+.nav__toggle span:nth-child(2){ top:26px; }
+.nav__toggle[aria-expanded="true"] span:nth-child(1){ transform:translateY(3px) rotate(45deg); }
+.nav__toggle[aria-expanded="true"] span:nth-child(2){ transform:translateY(-3px) rotate(-45deg); }
+
+/* ── Hero ──────────────────────────────────────────────── */
+
+.hero{
+  position:relative; min-height:100svh;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  overflow:hidden;
+  border-bottom:1px solid var(--line);
+}
+.hero__video{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:0; filter:saturate(.9) contrast(1.02);
+}
+.hero__scrim{
+  position:absolute; inset:0; z-index:1;
+  background:
+    radial-gradient(120% 90% at 70% 20%, rgba(11,11,12,.1) 0%, rgba(11,11,12,.7) 70%),
+    linear-gradient(to top, rgba(11,11,12,.97) 0%, rgba(11,11,12,.3) 50%, rgba(11,11,12,.5) 100%);
+}
+.hero__inner{
+  position:relative; z-index:2;
+  padding:0 var(--gut) clamp(26px,4vh,44px);
+}
+.hero__title{
+  font-family:var(--display); font-weight:600;
+  font-size:clamp(2.6rem,8vw,7rem);
+  line-height:.92; letter-spacing:-.042em;
+  margin:.5rem 0 0;
+  max-width:18ch;
+  text-wrap:balance;
+}
+.hero__title em{ font-style:normal; color:var(--accent); }
+.hero__lede{
+  margin:1.1rem 0 0; max-width:44ch;
+  color:#d6d2cc; font-size:1rem; line-height:1.5;
+}
+/* Clusters de controle seguem a regra da folha: a calha de 1px E o fio.
+   O botao perde a borda propria, o container faz o contorno — a costura
+   entre dois botoes fica 1px, nao borda+gap+borda. */
+.hero__actions,
+.downloads,
+.viewer__ui{
+  display:flex; flex-wrap:wrap; align-items:stretch;
+  gap:var(--hair);
+  background:var(--line-2);
+  border:1px solid var(--line-2);
+  width:max-content; max-width:100%;
+}
+.hero__actions > .btn,
+.downloads > .btn,
+.viewer__ui > .chip{ border:0; }
+.hero__actions{ margin-top:1.6rem; }
+
+/* hero facts ride the sheet grid so the page starts aligned */
+.hero__facts{
+  position:relative; z-index:2; margin:0;
+  display:grid; grid-template-columns:repeat(6,1fr);
+  gap:var(--hair); background:var(--line);
+  border-top:1px solid var(--line);
+}
+.hero__facts > div{ background:rgba(11,11,12,.72); padding:var(--pad); }
+.hero__facts dt{ font:var(--label); font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); }
+.hero__facts dd{ margin:.4rem 0 0; font-size:.82rem; color:var(--txt); }
+
+/* fato com anexo: icone maior, na frente do texto (nao empilhado embaixo) */
+.fact--dl{ display:flex; flex-direction:row; align-items:center; gap:1rem; }
+.fact-dl__btn{
+  flex:0 0 auto;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.35rem;
+  width:64px; min-height:64px; padding:.5rem;
+  border:1px solid var(--accent); background:var(--accent); color:#0b0b0c;
+  transition:background .25s var(--ease), border-color .25s var(--ease), filter .25s var(--ease);
+}
+.fact-dl__btn svg{ color:#0b0b0c; }
+.fact-dl__btn:hover{ filter:brightness(1.1); }
+.fact-dl__label{ font:var(--label); font-size:.5rem; letter-spacing:.06em; color:#0b0b0c; text-transform:uppercase; }
+
+/* variante logo: mesma caixa preenchida, sem link — so a marca do software,
+   nao e uma acao entao nao e <a>/<button> */
+.fact-dl__btn--logo{ cursor:default; padding:0; overflow:hidden; }
+.fact-dl__btn--logo img{ width:100%; height:100%; object-fit:cover; }
+.fact--dl__txt{ min-width:0; }
+
+
+/* ── The sheet ─────────────────────────────────────────── */
+
+.sheet{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-auto-flow:row dense;
+  gap:var(--hair);
+  background:var(--line);
+  border-bottom:1px solid var(--line);
+}
+.sheet:last-of-type{ border-bottom:0; }
+
+.cell{
+  position:relative; min-width:0;
+  grid-column:span 3;
+  background:var(--bg);
+}
+/* width of a cell on the 12-column sheet — scoped so it outranks component rules */
+.sheet > .w2 { grid-column:span 2;  }
+.sheet > .w3 { grid-column:span 3;  }
+.sheet > .w6 { grid-column:span 6;  }
+.sheet > .w9 { grid-column:span 9;  }
+.sheet > .w12{ grid-column:span 12; }
+
+/* a full-width text cell reads across instead of down */
+.cell--text.cell--row{ flex-direction:row; align-items:baseline; flex-wrap:wrap; gap:clamp(14px,3vw,48px); }
+.cell--row .line{ max-width:46ch; }
+.cell--row .idx{ margin:0; }
+.cell--row .line{ margin:0; }
+
+
+/* a text cell: index, one heading, one line, nothing else */
+.cell--text{
+  display:flex; flex-direction:column;
+  padding:var(--pad);
+}
+.cell--text > .h2{ margin-top:0; }
+.cell--pad{ padding:var(--pad); }
+
+/* pipeline: e o mesmo .data.data--1 usado no Specs (Trade-off/Next) —
+   zero valor bespoke de fonte/espacamento, so o posicionamento muda:
+   centralizado na linha de 12 colunas em vez de w3 encostado a esquerda. */
+/* essa linha tem so um item estreito no meio: sem vizinhos preenchendo as
+   outras colunas, o fundo --line do .sheet (pensado pra ser so o fio de 1px
+   entre chapas) ficava exposto como uma faixa cinza larga nas duas pontas.
+   --bg aqui funde a linha inteira com o fundo da pagina. */
+.sheet--plain{ background:var(--bg); }
+.pipeline{ grid-column:5 / span 4; }
+@media (max-width:1000px){ .pipeline{ grid-column:2 / span 4; } }
+@media (max-width:640px){ .pipeline{ grid-column:1 / -1; } }
+
+/* ── Plates ────────────────────────────────────────────── */
+
+/* faixa de cinco: quando 12 colunas nao dividem igual por w*, um sub-grid
+   proprio de 5 resolve — mesma disciplina de fio de 1px do resto da folha */
+.strip{
+  grid-column:span 12;
+  display:grid; grid-template-columns:repeat(5,1fr);
+  gap:var(--hair); background:var(--line);
+}
+/* faixa do indice tem 6, nao 5 — moods (o outro uso de .strip) fica em 5 */
+.strip--6{ grid-template-columns:repeat(6,1fr); }
+
+.tile{
+  display:block; position:relative; overflow:hidden; isolation:isolate;
+  width:100%; min-height:0;
+  background:var(--bg-2);
+  cursor:pointer;
+}
+.tile img{
+  width:100%; height:100%; object-fit:cover;
+  transition:transform 1s var(--ease-out), filter .45s var(--ease), opacity .5s var(--ease);
+}
+/* every plate is numbered, in sequence, by the stylesheet */
+.tile::before{
+  counter-increment:plate;
+  content:counter(plate,decimal-leading-zero);
+  position:absolute; z-index:2; left:10px; top:8px;
+  font:var(--label); font-size:.58rem; letter-spacing:.1em;
+  color:rgba(255,255,255,.62);
+  text-shadow:0 1px 4px rgba(0,0,0,.7);
+  font-variant-numeric:tabular-nums;
+  transition:color .3s var(--ease);
+}
+/* chapa sem marca: nada de texto sobre a imagem. content:none impede a
+   criacao do pseudo-elemento, entao o contador tambem nao incrementa e a
+   numeracao das chapas seguintes nao pula. */
+.tile--bare::before{ content:none; }
+
+/* chapa tecnica: enquadra em vez de recortar. Os dois screenshots largos
+   tem conteudo de borda a borda — um recorte quadrado comeria 37% deles. */
+.tile--fit{ background:var(--bg-2); }
+.tile--fit img{ object-fit:contain; }
+.tile--fit:hover img,.tile--fit:focus-visible img{ transform:none; filter:brightness(1.06); }
+
+.tile:hover img,.tile:focus-visible img{ transform:scale(1.03); filter:brightness(1.07); }
+.tile:hover::before,.tile:focus-visible::before{ color:var(--accent); }
+
+/* aspect ratios, only where a plate defines its own row height */
+.ar-1  { aspect-ratio:1/1;   }
+.ar-34 { aspect-ratio:3/4;   }
+.ar-32 { aspect-ratio:3/2;   }
+
+/* ── Data rows: keys and values, no prose ──────────────── */
+
+/* margin:0 aqui cobre <dl> e <ul>: a margem default do <dl> abria 16px de
+   preto acima e abaixo de cada bloco de dados e quebrava o fio de 1px */
+.data{
+  display:grid; gap:var(--hair); background:var(--line);
+  margin:0; padding:0;
+}
+.data--1{ grid-template-columns:1fr; align-content:start; }
+.data--4{ grid-template-columns:repeat(4,1fr); }
+.data > div,.data > li{
+  background:var(--bg); padding:var(--pad);
+  list-style:none;
+}
+.data dt,.data b,.data h3{
+  display:block; margin:0;
+  font:var(--label); font-size:.6rem; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--muted);
+}
+.data dd,.data p{
+  margin:.45rem 0 0; font-size:.86rem; color:var(--txt); line-height:1.45;
+  max-width:38ch;
+}
+/* ── 3D viewer ─────────────────────────────────────────── */
+
+.viewer{
+  position:relative;
+  background:radial-gradient(80% 60% at 50% 0%, #1d1d23 0%, var(--bg-2) 60%, #08080a 100%);
+  aspect-ratio:16/9; min-height:340px; overflow:hidden;
+}
+.viewer__canvas{ position:absolute; inset:0; }
+.viewer__canvas canvas{ display:block; width:100%; height:100%; touch-action:none; }
+.viewer__fallback{ position:absolute; inset:0; display:grid; place-items:center; cursor:ew-resize; }
+.viewer__fallback[hidden]{ display:none; }
+.viewer__fallback img{ max-height:86%; width:auto; user-select:none; -webkit-user-drag:none; }
+.viewer__hint,
+.viewer__status{
+  position:absolute; margin:0;
+  font:var(--label); font-size:.6rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted);
+}
+.viewer__hint{ bottom:14px; left:50%; transform:translateX(-50%); }
+.viewer__status{ right:14px; top:14px; }
+.viewer__ui{
+  position:absolute; left:14px; bottom:14px; z-index:3;
+}
+/* com as costuras de 1px o separador viraria fio duplo */
+.viewer__sep{ display:none; }
+
+/* ── Buttons / chips ───────────────────────────────────── */
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  min-height:44px; padding:.75em 1.3em;
+  border:1px solid var(--line-2);
+  font:var(--label); letter-spacing:.13em; text-transform:uppercase;
+  transition:background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
+}
+.btn--primary{ background:var(--txt); color:#0b0b0c; border-color:var(--txt); }
+.btn--primary:hover{ background:var(--accent); border-color:var(--accent); }
+.btn--ghost:hover{ border-color:var(--accent); color:var(--accent); }
+.btn__meta{ color:currentColor; opacity:.5; }
+
+.chip{
+  display:inline-flex; align-items:center; min-height:34px;
+  padding:.4em .85em; border:1px solid var(--line-2);
+  font:var(--label); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); white-space:nowrap;
+  background:rgba(11,11,12,.62);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  transition:color .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
+}
+.chip:hover{ color:var(--txt); border-color:var(--muted); }
+.chip:disabled{ opacity:.45; cursor:default; }
+.chip__meta{ opacity:.55; margin-left:.45em; }
+.chip[aria-pressed="true"]{ color:#0b0b0c; background:var(--accent); border-color:var(--accent); }
+
+.downloads{ margin-top:var(--pad); }
+
+/* ── Spec table ────────────────────────────────────────── */
+
+.spec{ width:100%; border-collapse:collapse; font-size:.85rem; }
+.spec th,.spec td{ text-align:left; padding:.7rem 0; border-bottom:1px solid var(--line); vertical-align:top; }
+.spec tr:last-child th,.spec tr:last-child td{ border-bottom:0; }
+.spec th{
+  width:150px; color:var(--muted);
+  font:var(--label); font-size:.6rem; letter-spacing:.13em;
+  text-transform:uppercase; padding-top:.95rem;
+}
+.spec td{ color:#d6d2cc; font-variant-numeric:tabular-nums; }
+.spec tr:hover td,.spec tr:hover th{ color:var(--txt); transition:color .25s var(--ease); }
+
+/* ── Modal (film) ──────────────────────────────────────── */
+
+.modal{
+  position:fixed; inset:0; z-index:200; display:grid; place-items:center;
+  overflow:auto;
+  background:rgba(6,6,7,.92);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  padding:var(--gut);
+  animation:fade .35s var(--ease);
+}
+.modal[hidden]{ display:none; }
+.modal__frame{ width:min(1200px,100%); }
+/* trava a caixa do filme: sem isto o elemento entra no layout com a altura
+   default do <video> e o poster aparece esmagado numa faixa */
+.modal__frame video{
+  display:block; width:100%; height:auto;
+  aspect-ratio:16/9; max-height:80vh;
+  object-fit:contain;
+  border:1px solid var(--line); background:#000;
+}
+
+.modal__close,.lb__close{
+  position:absolute; top:12px; right:12px;
+  display:grid; place-items:center; width:44px; height:44px;
+  border:1px solid var(--line-2); font-size:1rem; color:var(--muted);
+  background:rgba(11,11,12,.6);
+  transition:color .25s var(--ease), border-color .25s var(--ease);
+}
+.modal__close:hover,.lb__close:hover{ color:var(--txt); border-color:var(--muted); }
+
+/* ── Lightbox ──────────────────────────────────────────── */
+
+.lb{
+  position:fixed; inset:0; z-index:200; display:grid; place-items:center;
+  background:rgba(6,6,7,.94);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  padding:clamp(14px,5vw,64px);
+  animation:fade .3s var(--ease);
+}
+.lb[hidden]{ display:none; }
+.lb__fig{ margin:0; max-width:100%; max-height:100%; }
+.lb__fig img{ max-height:82vh; width:auto; margin:0 auto; border:1px solid var(--line); }
+.lb__fig figcaption{
+  display:flex; justify-content:space-between; gap:1rem; margin-top:.85rem;
+  font-family:var(--mono); font-size:.7rem; color:var(--muted); letter-spacing:.01em;
+}
+.lb__fig em{ font-style:normal; color:var(--dim); font-variant-numeric:tabular-nums; }
+.lb__nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  display:grid; place-items:center;
+  width:52px; height:52px; font-size:1.6rem; color:var(--muted);
+  border:1px solid transparent;
+  transition:color .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
+}
+.lb__nav:hover{ color:var(--txt); border-color:var(--line-2); background:rgba(11,11,12,.6); }
+.lb__nav--prev{ left:10px; }
+.lb__nav--next{ right:10px; }
+
+@keyframes fade{ from{opacity:0} to{opacity:1} }
+body.is-locked{ overflow:hidden; }
+
+
+/* ── Footer ────────────────────────────────────────────── */
+
+.foot{ border-top:1px solid var(--line); background:var(--bg-2); }
+.foot__in{
+  display:grid; grid-template-columns:1fr auto; align-items:end; gap:1.4rem;
+  padding:clamp(34px,5vh,60px) var(--gut);
+}
+.foot__name{
+  font-family:var(--display); font-weight:600;
+  font-size:clamp(1.5rem,3vw,2.3rem);
+  margin:0; line-height:1; letter-spacing:-.032em; color:var(--txt);
+}
+.foot__role{ margin:.5rem 0 0; color:var(--muted); font-size:.85rem; }
+.foot__links{ display:flex; flex-wrap:wrap; gap:1.1rem; margin:0; }
+.foot__links a{
+  display:inline-flex; align-items:center; min-height:44px;
+  font:var(--label); font-size:.62rem; letter-spacing:.13em; text-transform:uppercase;
+  border-bottom:1px solid var(--line);
+  transition:border-color .3s var(--ease), color .3s var(--ease);
+}
+.foot__links a:hover{ border-color:var(--accent); color:var(--accent); }
+.foot__meta{
+  grid-column:1 / -1; margin:0;
+  font-family:var(--mono); font-size:.62rem; color:var(--dim); letter-spacing:.01em;
+}
+
+/* ── Reveal ────────────────────────────────────────────── */
+
+[data-reveal]{
+  opacity:0;
+  transition:opacity .7s var(--ease-out);
+}
+[data-reveal].is-in{ opacity:1; }
+
+/* plates inside a revealed row arrive as a wave */
+[data-reveal].is-in > *{ animation:plate .55s var(--ease-out) both; }
+[data-reveal].is-in > :nth-child(2){ animation-delay:.05s }
+[data-reveal].is-in > :nth-child(3){ animation-delay:.10s }
+[data-reveal].is-in > :nth-child(4){ animation-delay:.15s }
+[data-reveal].is-in > :nth-child(5){ animation-delay:.20s }
+[data-reveal].is-in > :nth-child(6){ animation-delay:.25s }
+[data-reveal].is-in > :nth-child(7){ animation-delay:.30s }
+@keyframes plate{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
+
+/* ── Responsive: remap the spans, keep the grid ────────── */
+
+@media (max-width:1000px){
+  .sheet{ grid-template-columns:repeat(6,1fr); }
+  .sheet > .cell,.sheet > .w2,.sheet > .w3{ grid-column:span 3; }
+  .strip{ grid-template-columns:repeat(3,1fr); }
+  .sheet > .w6,.sheet > .w9,.sheet > .w12,
+    .data--4{ grid-template-columns:repeat(2,1fr); }
+  .hero__facts{ grid-template-columns:repeat(2,1fr); }
+  .hero__facts > div{ padding-inline:var(--gut); }
+}
+
+@media (max-width:640px){
+  .sheet{ grid-template-columns:repeat(2,1fr); }
+  .sheet > *{ grid-column:span 2; }
+  .sheet > .half-sm{ grid-column:span 1; }
+  .strip{ grid-template-columns:repeat(2,1fr); }
+    .cell--text.cell--row{ flex-direction:column; align-items:flex-start; gap:.5rem; }
+  .cell--row .line{ margin-top:.2rem; }
+  .data--4{ grid-template-columns:1fr; }
+    .viewer{ aspect-ratio:4/5; }
+  .viewer__ui{ left:10px; right:10px; bottom:10px; width:auto; }
+  .hero__facts{ grid-template-columns:1fr; }
+  .foot__in{ grid-template-columns:1fr; align-items:start; }
+  .spec th{ width:120px; }
+
+  .nav__toggle{ display:block; }
+  .nav__menu{
+    position:fixed; inset:0 0 auto 0;
+    flex-direction:column; align-items:flex-start; gap:.1rem;
+    background:rgba(11,11,12,.97);
+    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+    padding:70px var(--gut) 30px;
+    border-bottom:1px solid var(--line);
+    transform:translateY(-101%); transition:transform .45s var(--ease);
+  }
+  .nav__menu.is-open{ transform:none; }
+  .nav__link{ font-size:.95rem; letter-spacing:.06em; padding:.6rem 0; }
+  .nav__link--cta{ margin-top:.7rem; }
+}
+
+/* ── Reduced motion ────────────────────────────────────── */
+
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  *,*::before,*::after{
+    animation-duration:.001ms !important; animation-delay:0ms !important;
+    transition-duration:.001ms !important;
+  }
+  [data-reveal]{ opacity:1; }
+  [data-reveal].is-in > *{ animation:none; }
+}
+
+/* ── Print ─────────────────────────────────────────────── */
+
+@media print{
+  .nav,.progress,.viewer__ui,.modal,.lb{ display:none !important; }
+  body{ background:#fff; color:#111; }
+  body::after{ display:none; }
+  .sheet{ background:#fff; gap:8px; }
+  .cell,.tile,.data > div,.data > li,.figure{ background:#fff; }
+  .sheet,.hero{ border-color:#ddd; page-break-inside:avoid; }
+  .line,.spec td,.data dd{ color:#222; }
+}
