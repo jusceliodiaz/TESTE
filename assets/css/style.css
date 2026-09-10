@@ -232,7 +232,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    O botao perde a borda propria, o container faz o contorno — a costura
    entre dois botoes fica 1px, nao borda+gap+borda. */
 .hero__actions,
-.downloads,
 .viewer__ui{
   display:flex; flex-wrap:wrap; align-items:stretch;
   gap:var(--hair);
@@ -241,7 +240,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   width:max-content; max-width:100%;
 }
 .hero__actions > .btn,
-.downloads > .btn,
 .viewer__ui > .chip{ border:0; }
 .hero__actions{ margin-top:1.6rem; }
 
@@ -315,7 +313,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .cell--text > .h2{ margin-top:0; }
 .cell--pad{ padding:var(--pad); }
 
-/* pipeline: e o mesmo .data.data--1 usado no Specs (Trade-off/Next) —
+/* pipeline: e o mesmo .data.data--1 usado em qualquer bloco de chave/valor —
    zero valor bespoke de fonte/espacamento, so o posicionamento muda:
    centralizado na linha de 12 colunas em vez de w3 encostado a esquerda. */
 /* essa linha tem so um item estreito no meio: sem vizinhos preenchendo as
@@ -456,21 +454,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .chip__meta{ opacity:.55; margin-left:.45em; }
 .chip[aria-pressed="true"]{ color:#0b0b0c; background:var(--accent); border-color:var(--accent); }
 
-.downloads{ margin-top:var(--pad); }
-
-/* ── Spec table ────────────────────────────────────────── */
-
-.spec{ width:100%; border-collapse:collapse; font-size:.85rem; }
-.spec th,.spec td{ text-align:left; padding:.7rem 0; border-bottom:1px solid var(--line); vertical-align:top; }
-.spec tr:last-child th,.spec tr:last-child td{ border-bottom:0; }
-.spec th{
-  width:150px; color:var(--muted);
-  font:var(--label); font-size:.6rem; letter-spacing:.13em;
-  text-transform:uppercase; padding-top:.95rem;
-}
-.spec td{ color:#d6d2cc; font-variant-numeric:tabular-nums; }
-.spec tr:hover td,.spec tr:hover th{ color:var(--txt); transition:color .25s var(--ease); }
-
 /* ── Modal (film) ──────────────────────────────────────── */
 
 .modal{
@@ -601,7 +584,6 @@ body.is-locked{ overflow:hidden; }
   .viewer__ui{ left:10px; right:10px; bottom:10px; width:auto; }
   .hero__facts{ grid-template-columns:1fr; }
   .foot__in{ grid-template-columns:1fr; align-items:start; }
-  .spec th{ width:120px; }
 
   .nav__toggle{ display:block; }
   .nav__menu{
@@ -639,5 +621,5 @@ body.is-locked{ overflow:hidden; }
   .sheet{ background:#fff; gap:8px; }
   .cell,.tile,.data > div,.data > li,.figure{ background:#fff; }
   .sheet,.hero{ border-color:#ddd; page-break-inside:avoid; }
-  .line,.spec td,.data dd{ color:#222; }
+  .line,.data dd{ color:#222; }
 }

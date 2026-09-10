@@ -172,10 +172,19 @@
     const img = $('#ttFrame', tt);
     const FRAMES = 36;
     const PATH = (n) => `assets/img/turntable/frame-${String(n).padStart(3, '0')}.webp`;
-    let frame = 1, startX = 0, startFrame = 1, dragging = false;
+    let frame = 1, startX = 0, startFrame = 1, dragging = false, preloaded = false;
 
-    /* pré-carrega */
-    for (let i = 1; i <= FRAMES; i++) { const p = new Image(); p.src = PATH(i); }
+    /* pré-carrega os 36 frames só quando o fallback vira visível (GLB falhou
+       ou o watchdog decidiu por ele) — no caminho feliz o viewer 3D nunca
+       precisa deles, então não faz sentido baixar tudo de cara. */
+    const preload = () => {
+      if (preloaded) return;
+      preloaded = true;
+      for (let i = 1; i <= FRAMES; i++) { const p = new Image(); p.src = PATH(i); }
+    };
+    if (!tt.hidden) preload();
+    new MutationObserver(() => { if (!tt.hidden) preload(); })
+      .observe(tt, { attributes: true, attributeFilter: ['hidden'] });
 
     const render = () => { img.src = PATH(frame); };
 
