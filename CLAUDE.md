@@ -44,6 +44,8 @@ Styling ([assets/css/style.css](assets/css/style.css)) is one file built around 
 - Some external links (Portfolio, ArtStation, LinkedIn in the footer) are still placeholders (`href="#"`) — don't treat their absence as a bug unless asked to wire them up.
 - Comments in the JS/CSS are a mix of English and Portuguese; match whichever language a given comment block already uses when editing nearby.
 - There is no Specs/delivery section (removed by request) — the `.spec` table CSS and the `downloads/` PDF/MP4 links that lived only in that section were removed along with it. Nav no longer has a `#specs` entry; the `01 3D` link now carries the `nav__link--cta` styling that `Specs` used to have.
+- The `#interior` section has a `.strip.strip--6` of `.tile.ar-1` plates: only the first (`images/chair/interior.webp`) is a real render — the other five are empty `.tile--pending` placeholders (diagonal hatch background, "Pending" label from CSS `::after`, no `data-full` so the lightbox skips them). Swap a `tile--pending` div for a real `<button class="tile ar-1" data-full="…">` + `<img>` as renders come in; don't delete the placeholder slots without asking, they're holding the row's layout at 6.
+- Nav labels are deliberately short (`Modeling`, `Postproduction`, `Interior` — not "Chaise ___"); keep that pattern for any new section link.
 
 ## Sharing / SEO meta
 

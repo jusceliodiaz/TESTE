@@ -372,6 +372,20 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .tile:hover img,.tile:focus-visible img{ transform:scale(1.03); filter:brightness(1.07); }
 .tile:hover::before,.tile:focus-visible::before{ color:var(--accent); }
 
+/* chapa vazia: reserva o lugar de um render que ainda nao existe. Diagonais
+   avisam "vazio de proposito" em vez de deixar um retangulo cinza mudo;
+   o rotulo vem do CSS (::after), sem markup extra dentro da div. */
+.tile--pending{
+  cursor:default;
+  display:grid; place-items:center;
+  background:repeating-linear-gradient(-45deg, var(--bg-2) 0 10px, var(--bg-3) 10px 20px);
+}
+.tile--pending::after{
+  content:"Pending";
+  font:var(--label); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--dim);
+}
+
 /* aspect ratios, only where a plate defines its own row height */
 .ar-1  { aspect-ratio:1/1;   }
 .ar-34 { aspect-ratio:3/4;   }
