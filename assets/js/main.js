@@ -117,7 +117,9 @@
     index = (i + group.length) % group.length;
     const t = group[index];
     lbImg.src = t.dataset.full;
-    lbImg.alt = t.querySelector('img')?.alt || '';
+    /* nas chapas de dois quadros (.ishot) o alt tem que ser o do quadro
+       visível, não o do primeiro <img> do DOM */
+    lbImg.alt = (t.querySelector('img.is-active') || t.querySelector('img'))?.alt || '';
     lbCap.textContent = t.dataset.caption || '';
     lbNum.textContent = `${index + 1} / ${group.length}`;
   };
@@ -165,6 +167,87 @@
     if (e.key === 'ArrowRight') show(index + 1);
     if (e.key === 'ArrowLeft')  show(index - 1);
   });
+
+  /* ── 6b. Interior shots: mini-slider de dois quadros ──── */
+  /* Cada chapa do #interior alterna entre o render vazio e o mesmo render
+     com pessoas. Gira sozinha a cada 10s, mas cada uma começa com um atraso
+     sorteado: em fase, as quatro virariam juntas e a fileira daria um
+     "flash" a cada 10s. Desencontradas, a cena respira.
+     Só o START é aleatório — a ordem dos quadros continua alternando, senão
+     a seta e o giro automático discordariam sobre qual é o próximo quadro.
+
+     Pausa em hover/foco (a WCAG 2.2.2 pede um jeito de parar conteúdo que
+     se atualiza sozinho), fora da tela e com a aba em segundo plano; e não
+     gira nada sob prefers-reduced-motion. */
+  const SHOT_MS = 10000;
+  const shots = [];
+
+  $$('.ishot').forEach((shot) => {
+    const frames = $$('.ishot__img', shot);
+    if (frames.length < 2) return;
+
+    let i = Math.max(0, frames.findIndex(f => f.classList.contains('is-active')));
+    let timer = null, held = false, onScreen = false;
+    const pill = shot.querySelector('.plate-pill');
+
+    const paint = (next) => {
+      i = (next + frames.length) % frames.length;
+      frames.forEach((f, n) => f.classList.toggle('is-active', n === i));
+      /* a lightbox lê data-full/-caption do .tile, então o quadro visível
+         precisa estar refletido aqui — senão abre o quadro errado */
+      shot.dataset.full = frames[i].getAttribute('src');
+      const cap = frames[i].dataset.caption;
+      if (cap) shot.dataset.caption = cap;
+      /* quadro que traz data-pill renomeia a etiqueta ao aparecer (os passes
+         do render: AO, clay, ID…). Sem o atributo a etiqueta fica parada —
+         é o caso das horas do dia, onde os dois quadros são o mesmo horário
+         e só muda quem está na cena. */
+      if (pill && frames[i].dataset.pill) pill.textContent = frames[i].dataset.pill;
+    };
+
+    const stop = () => { clearTimeout(timer); timer = null; };
+    const tick = () => { paint(i + 1); timer = setTimeout(tick, SHOT_MS); };
+    const start = (delay = SHOT_MS) => {
+      stop();
+      if (reduce || held || !onScreen || document.hidden) return;
+      timer = setTimeout(tick, delay);
+    };
+
+    /* setas: param o clique antes que ele suba até o handler delegado da
+       lightbox — senão trocar de quadro abriria a imagem em tela cheia */
+    $$('.ishot__nav', shot).forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        paint(i + (btn.classList.contains('ishot__nav--next') ? 1 : -1));
+        start();               /* 10s cheios depois de mexer na mão */
+      });
+    });
+
+    shot.addEventListener('mouseenter', () => { held = true;  stop();  });
+    shot.addEventListener('mouseleave', () => { held = false; start(); });
+    shot.addEventListener('focusin',    () => { held = true;  stop();  });
+    shot.addEventListener('focusout',   () => { held = false; start(); });
+
+    shots.push({
+      el: shot,
+      /* o primeiro giro sai entre 2s e 10s — é daqui que vem o desencontro
+         entre as quatro chapas; do segundo em diante o passo é fixo */
+      wake: (visible) => { onScreen = visible; visible ? start(SHOT_MS * (.2 + Math.random() * .8)) : stop(); },
+      sync: () => (document.hidden ? stop() : start())
+    });
+  });
+
+  if (shots.length) {
+    /* fora da tela não gira: economiza trabalho e evita que a chapa troque
+       de quadro justo enquanto ninguém está olhando */
+    const byEl = new Map(shots.map(s => [s.el, s]));
+    const shotIO = new IntersectionObserver((entries) => {
+      entries.forEach(en => byEl.get(en.target)?.wake(en.isIntersecting));
+    }, { rootMargin: '0px 0px -10% 0px' });
+    shots.forEach(s => shotIO.observe(s.el));
+    document.addEventListener('visibilitychange', () => shots.forEach(s => s.sync()));
+  }
 
   /* ── 7. Turntable fallback (drag-scrub) ──────────────── */
   const tt = $('#viewerFallback');
@@ -214,21 +297,16 @@
   /* ── 9. Watchdog do viewer ──────────────────────────
      Se o three.js (CDN) não carregar em 7s, mostra o turntable
      em vez de deixar um retângulo vazio na frente do cliente. */
+  /* O fallback cobre os dois painéis (inset:0 + fundo próprio no CSS), então
+     mostrá-lo basta — não é preciso esconder cada .viewer__canvas na mão. */
   const vHost = $('#viewerCanvas');
   const vFall = $('#viewerFallback');
   if (vHost && vFall) {
     setTimeout(() => {
       if (!vHost.querySelector('canvas')) {
-        vHost.style.display = 'none';
         vFall.hidden = false;
-        const st = $('#viewerStatus');
-        if (st) st.textContent = 'Turntable preview';
+        $$('.viewer__status').forEach(st => { st.textContent = 'Anteprima turntable'; });
       }
     }, 7000);
   }
-
-
-  /* ── 10. Ano no footer (se houver placeholder) ───────── */
-  const y = $('#year');
-  if (y) y.textContent = String(new Date().getFullYear());
 })();

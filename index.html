@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Juscelio Diaz — Lounge Chair 3D Modeling Test</title>
-<meta name="description" content="Juscelio Diaz — a 3D modeling test piece: a lounge chair with reference plates, camera setups, five material variants, and an interactive 3D viewer.">
+<title>Juscelio Diaz — Chaise longue · Test di modellazione 3D</title>
+<meta name="description" content="Juscelio Diaz — un test di modellazione 3D: una chaise longue con tavole di riferimento, set di camere, cinque varianti di materiale e un visualizzatore 3D interattivo.">
 <meta name="theme-color" content="#0b0b0c">
-<link rel="canonical" href="https://jdiaz.vercel.app/">
+<link rel="canonical" href="https://chaiselongue.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0b0c'/%3E%3Crect x='6' y='20' width='20' height='4' fill='%23d5a76c'/%3E%3Crect x='9' y='12' width='14' height='6' fill='%23d5a76c'/%3E%3C/svg%3E">
 
 <!-- Página no ar mas fora do Google enquanto os renders forem placeholders: apague esta linha quando publicar de vez -->
@@ -16,28 +16,28 @@
      Gerada a partir de images/chair/interior.webp; recorte/versão em assets/img/og-interior.jpg. -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Juscelio Diaz">
-<meta property="og:locale" content="en_US">
-<meta property="og:title" content="Juscelio Diaz — Lounge Chair · 3D Modeling Test">
-<meta property="og:description" content="A 3D modeling test piece: reference plates, camera setups, five material variants, and an interactive 3D viewer.">
-<meta property="og:url" content="https://jdiaz.vercel.app/">
-<meta property="og:image" content="https://jdiaz.vercel.app/assets/img/og-interior.jpg">
-<meta property="og:image:secure_url" content="https://jdiaz.vercel.app/assets/img/og-interior.jpg">
+<meta property="og:locale" content="it_IT">
+<meta property="og:title" content="Juscelio Diaz — Chaise longue · Test di modellazione 3D">
+<meta property="og:description" content="Un test di modellazione 3D: tavole di riferimento, set di camere, cinque varianti di materiale e un visualizzatore 3D interattivo.">
+<meta property="og:url" content="https://chaiselongue.vercel.app/">
+<meta property="og:image" content="https://chaiselongue.vercel.app/assets/img/og-interior.jpg">
+<meta property="og:image:secure_url" content="https://chaiselongue.vercel.app/assets/img/og-interior.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Interior render of the lounge chair by Juscelio Diaz, styled in a living-room scene.">
+<meta property="og:image:alt" content="Render d'interni della chaise longue di Juscelio Diaz, ambientata in un salotto.">
 
 <!-- Twitter card mirrors the OG tags above -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Juscelio Diaz — Lounge Chair · 3D Modeling Test">
-<meta name="twitter:description" content="A 3D modeling test piece: reference plates, camera setups, five material variants, and an interactive 3D viewer.">
-<meta name="twitter:image" content="https://jdiaz.vercel.app/assets/img/og-interior.jpg">
-<meta name="twitter:image:alt" content="Interior render of the lounge chair by Juscelio Diaz, styled in a living-room scene.">
+<meta name="twitter:title" content="Juscelio Diaz — Chaise longue · Test di modellazione 3D">
+<meta name="twitter:description" content="Un test di modellazione 3D: tavole di riferimento, set di camere, cinque varianti di materiale e un visualizzatore 3D interattivo.">
+<meta name="twitter:image" content="https://chaiselongue.vercel.app/assets/img/og-interior.jpg">
+<meta name="twitter:image:alt" content="Render d'interni della chaise longue di Juscelio Diaz, ambientata in un salotto.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=62">
+<link rel="stylesheet" href="assets/css/style.css?v=80">
 </head>
 <body>
 
@@ -49,10 +49,10 @@
     <span class="sr-only">Menu</span>
   </button>
 
-  <nav class="nav__menu" id="navMenu" aria-label="Sections">
-    <a class="nav__link" href="#modeling">Modeling</a>
-    <a class="nav__link" href="#post">Postproduction</a>
-    <a class="nav__link" href="#interior">Interior</a>
+  <nav class="nav__menu" id="navMenu" aria-label="Sezioni">
+    <a class="nav__link" href="#modeling">Modellazione</a>
+    <a class="nav__link" href="#post">Postproduzione</a>
+    <a class="nav__link" href="#interior">Interni</a>
     <a class="nav__link nav__link--cta" href="#viewer">01 3D</a>
   </nav>
 </header>
@@ -71,254 +71,405 @@
 
     <div class="hero__inner">
       <h1 class="hero__title" data-reveal>Chaise <em>longue</em></h1>
-      <p class="hero__lede" data-reveal>Low, soft-shouldered lounge chair on a solid timber plinth.</p>
+      <p class="hero__lede" data-reveal>Chaise longue bassa, dalle spalle morbide, su un basamento in legno massello.</p>
       <div class="hero__actions" data-reveal>
         <button class="btn btn--primary" id="playFilm">
           <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
-          Watch the film <span class="btn__meta">1:10</span>
+          Guarda il film <span class="btn__meta">1:10</span>
         </button>
       </div>
     </div>
-
-    <dl class="hero__facts" data-reveal>
-      <div class="fact--dl">
-        <a class="fact-dl__btn" href="https://drive.google.com/uc?export=download&amp;id=1WiVxA7MQOjWF9hMk9nf_UNj2z19haR8K"
-           target="_blank" rel="noopener" aria-label="Download the Role scene file">
-          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-            <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 15a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V18a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V18a.75.75 0 01.75-.75z"/>
-          </svg>
-          <span class="fact-dl__label">Download</span>
-        </a>
-        <div class="fact--dl__txt">
-          <dt>Role</dt>
-          <dd>Modeling · Base Mesh done in 3dsMax</dd>
-        </div>
-      </div>
-      <div class="fact--dl">
-        <span class="fact-dl__btn fact-dl__btn--logo">
-          <img src="images/chair/blenderlogo.webp" alt="Blender" loading="lazy" decoding="async">
-        </span>
-        <div class="fact--dl__txt">
-          <dt>Software</dt>
-          <dd>UV Mapping done in Blender</dd>
-        </div>
-      </div>
-      <div class="fact--dl">
-        <span class="fact-dl__btn fact-dl__btn--logo">
-          <img src="images/chair/maxlogo.webp" alt="3ds Max" loading="lazy" decoding="async">
-        </span>
-        <div class="fact--dl__txt">
-          <dt>Implementation</dt>
-          <dd>Optimization done in 3dsMax</dd>
-        </div>
-      </div>
-      <div class="fact--dl">
-        <span class="fact-dl__btn fact-dl__btn--logo">
-          <img src="images/chair/blenderlogo.webp" alt="Blender" loading="lazy" decoding="async">
-        </span>
-        <div class="fact--dl__txt">
-          <dt>Sculpting</dt>
-          <dd>High mesh done in Blender</dd>
-        </div>
-      </div>
-      <div class="fact--dl">
-        <a class="fact-dl__btn" href="https://drive.google.com/uc?export=download&amp;id=16e22o-w55ADKXd3BMWvlfZofjDA6S2J1"
-           target="_blank" rel="noopener" aria-label="Download the 3dsMax scene file">
-          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-            <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 15a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V18a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V18a.75.75 0 01.75-.75z"/>
-          </svg>
-          <span class="fact-dl__label">Download</span>
-        </a>
-        <div class="fact--dl__txt">
-          <dt>Studio Render</dt>
-          <dd>Done in 3dsMax Corona Render</dd>
-        </div>
-      </div>
-      <div class="fact--dl">
-        <a class="fact-dl__btn" href="https://drive.google.com/uc?export=download&amp;id=16e22o-w55ADKXd3BMWvlfZofjDA6S2J1"
-           target="_blank" rel="noopener" aria-label="Download the Interior render scene file">
-          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-            <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 15a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V18a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V18a.75.75 0 01.75-.75z"/>
-          </svg>
-          <span class="fact-dl__label">Download</span>
-        </a>
-        <div class="fact--dl__txt">
-          <dt>Interior Render</dt>
-          <dd>Done in 3dsMax Corona Render</dd>
-        </div>
-      </div>
-    </dl>
   </section>
 
-  <!-- ═══════════════ INDEX: quatro chapas tecnicas ═══════════════ -->
+  <!-- ═══════════════ INDEX: seis fichas — texto em cima, imagem embaixo, um bloco so ═══════════════ -->
   <section class="sheet" data-reveal>
     <div class="strip strip--6" data-gallery="index">
-      <button class="tile tile--bare tile--fit ar-32" data-full="images/chair/index-1.webp" data-caption="Shaded viewport">
-        <img src="images/chair/index-1.webp" alt="Shaded viewport render of the chair" loading="lazy" decoding="async">
-      </button>
-      <button class="tile tile--bare tile--fit ar-32" data-full="images/chair/index-2.webp" data-caption="UV layout">
-        <img src="images/chair/index-2.webp" alt="UV layout for the chair asset" loading="lazy" decoding="async">
-      </button>
-      <button class="tile tile--bare tile--fit ar-32" data-full="images/chair/index-3.webp" data-caption="Viewport frame">
-        <img src="images/chair/index-3.webp" alt="Wide viewport frame of the chair asset" loading="lazy" decoding="async">
-      </button>
-      <button class="tile tile--bare tile--fit ar-32" data-full="images/chair/index-4.webp" data-caption="Viewport frame">
-        <img src="images/chair/index-4.webp" alt="Wide viewport frame of the chair asset" loading="lazy" decoding="async">
-      </button>
-      <button class="tile tile--bare tile--fit ar-32" data-full="images/chair/render_perspective2.webp" data-caption="Perspective render">
-        <img src="images/chair/render_perspective2.webp" alt="Perspective render of the chair" loading="lazy" decoding="async">
-      </button>
-      <button class="tile tile--bare tile--fit ar-32" data-full="images/chair/interior.webp" data-caption="Interior render">
-        <img src="images/chair/interior.webp" alt="Interior render of the chair" loading="lazy" decoding="async">
-      </button>
+      <div class="fact-plate">
+        <div class="fact-plate__head">
+          <a class="fact-plate__icon" href="https://drive.google.com/uc?export=download&amp;id=1WiVxA7MQOjWF9hMk9nf_UNj2z19haR8K"
+             target="_blank" rel="noopener" aria-label="Scarica il file di scena della modellazione">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 15a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V18a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V18a.75.75 0 01.75-.75z"/>
+            </svg>
+            <span class="fact-plate__icon-label">Scarica</span>
+          </a>
+          <dl class="fact-plate__copy">
+            <dt class="fact-plate__eyebrow"><span class="fact-plate__eyebrow-id">01</span> Ruolo</dt>
+            <dd class="fact-plate__title">Modellazione · Base mesh realizzata in 3dsMax</dd>
+          </dl>
+        </div>
+        <button class="tile tile--bare tile--fit ar-index" data-full="images/chair/index-1.webp" data-caption="Viewport shaded">
+          <img src="images/chair/index-1.webp" alt="Render shaded in viewport della chaise" loading="lazy" decoding="async">
+          <span class="fact-plate__tag" aria-hidden="true">Viewport shaded</span>
+        </button>
+      </div>
+
+      <div class="fact-plate">
+        <div class="fact-plate__head">
+          <span class="fact-plate__icon fact-plate__icon--mark">
+            <img src="images/chair/blenderlogo.webp" alt="Blender" loading="lazy" decoding="async">
+          </span>
+          <dl class="fact-plate__copy">
+            <dt class="fact-plate__eyebrow"><span class="fact-plate__eyebrow-id">02</span> Software</dt>
+            <dd class="fact-plate__title">Mappatura UV realizzata in Blender</dd>
+          </dl>
+        </div>
+        <button class="tile tile--bare tile--fit ar-index" data-full="images/chair/index-2.webp" data-caption="Layout UV">
+          <img src="images/chair/index-2.webp" alt="Layout UV dell'asset della chaise" loading="lazy" decoding="async">
+          <span class="fact-plate__tag" aria-hidden="true">Layout UV</span>
+        </button>
+      </div>
+
+      <div class="fact-plate">
+        <div class="fact-plate__head">
+          <span class="fact-plate__icon fact-plate__icon--mark">
+            <img src="images/chair/maxlogo.webp" alt="3ds Max" loading="lazy" decoding="async">
+          </span>
+          <dl class="fact-plate__copy">
+            <dt class="fact-plate__eyebrow"><span class="fact-plate__eyebrow-id">03</span> Implementazione</dt>
+            <dd class="fact-plate__title">Ottimizzazione realizzata in 3dsMax</dd>
+          </dl>
+        </div>
+        <button class="tile tile--bare tile--fit ar-index" data-full="images/chair/index-3.webp" data-caption="Inquadratura viewport">
+          <img src="images/chair/index-3.webp" alt="Inquadratura ampia del viewport con l'asset della chaise" loading="lazy" decoding="async">
+          <span class="fact-plate__tag" aria-hidden="true">Inquadratura viewport</span>
+        </button>
+      </div>
+
+      <div class="fact-plate">
+        <div class="fact-plate__head">
+          <span class="fact-plate__icon fact-plate__icon--mark">
+            <img src="images/chair/blenderlogo.webp" alt="Blender" loading="lazy" decoding="async">
+          </span>
+          <dl class="fact-plate__copy">
+            <dt class="fact-plate__eyebrow"><span class="fact-plate__eyebrow-id">04</span> Scultura</dt>
+            <dd class="fact-plate__title">High mesh realizzata in Blender</dd>
+          </dl>
+        </div>
+        <button class="tile tile--bare tile--fit ar-index" data-full="images/chair/index-4.webp" data-caption="Inquadratura viewport">
+          <img src="images/chair/index-4.webp" alt="Inquadratura ampia del viewport con l'asset della chaise" loading="lazy" decoding="async">
+          <span class="fact-plate__tag" aria-hidden="true">Inquadratura viewport</span>
+        </button>
+      </div>
+
+      <div class="fact-plate">
+        <div class="fact-plate__head">
+          <a class="fact-plate__icon" href="https://drive.google.com/uc?export=download&amp;id=16e22o-w55ADKXd3BMWvlfZofjDA6S2J1"
+             target="_blank" rel="noopener" aria-label="Scarica il file di scena 3dsMax">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 15a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V18a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V18a.75.75 0 01.75-.75z"/>
+            </svg>
+            <span class="fact-plate__icon-label">Scarica</span>
+          </a>
+          <dl class="fact-plate__copy">
+            <dt class="fact-plate__eyebrow"><span class="fact-plate__eyebrow-id">05</span> Render in studio</dt>
+            <dd class="fact-plate__title">Realizzato in 3dsMax con Corona Render</dd>
+          </dl>
+        </div>
+        <button class="tile tile--bare tile--fit ar-index" data-full="images/chair/render_perspective2.webp" data-caption="Render prospettico">
+          <img src="images/chair/render_perspective2.webp" alt="Render prospettico della chaise" loading="lazy" decoding="async">
+          <span class="fact-plate__tag" aria-hidden="true">Render prospettico</span>
+        </button>
+      </div>
+
+      <div class="fact-plate">
+        <div class="fact-plate__head">
+          <a class="fact-plate__icon" href="https://drive.google.com/uc?export=download&amp;id=1icKrZCl00cb-lcsJ-F-WuzWXkHLpSytT"
+             target="_blank" rel="noopener" aria-label="Scarica il file di scena del render d'interni">
+            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75zm-9 15a.75.75 0 01.75.75v2.25a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5V18a.75.75 0 011.5 0v2.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V18a.75.75 0 01.75-.75z"/>
+            </svg>
+            <span class="fact-plate__icon-label">Scarica</span>
+          </a>
+          <dl class="fact-plate__copy">
+            <dt class="fact-plate__eyebrow"><span class="fact-plate__eyebrow-id">06</span> Render d'interni</dt>
+            <dd class="fact-plate__title">Realizzato in 3dsMax con Corona Render</dd>
+          </dl>
+        </div>
+        <button class="tile tile--bare tile--fit ar-index" data-full="images/chair/interior.webp" data-caption="Render d'interni">
+          <img src="images/chair/interior.webp" alt="Render d'interni della chaise" loading="lazy" decoding="async">
+          <span class="fact-plate__tag" aria-hidden="true">Render d'interni</span>
+        </button>
+      </div>
     </div>
   </section>
 
-  <!-- ═══════════════ PIPELINE: Cameras in 3dsMax ═══════════════ -->
-  <section class="sheet sheet--plain" id="modeling" data-reveal>
-    <dl class="data data--1 pipeline">
-      <div><dt>Cameras</dt><dd>Done in 3dsMax</dd></div>
-    </dl>
+  <!-- ═══════════════ MODELING: titulo de secao ═══════════════ -->
+  <!-- era um bloco .data--1/.pipeline (Cameras / Done in 3dsMax); virou
+       titulo de secao na mesma forma do "Interior scene" -->
+  <section class="sheet" id="modeling" data-reveal>
+    <div class="cell cell--text cell--center w12">
+      <h2 class="h2">Modellazione <em>chaise</em></h2>
+    </div>
   </section>
 
   <!-- ═══════════════ CLAY: seis vistas ═══════════════ -->
   <section class="sheet" data-gallery="clay-views" data-reveal>
-    <button class="tile w2 ar-1" data-full="images/chair/clay-34.webp" data-caption="Clay — 3/4 view">
-      <img src="images/chair/clay-34.webp" alt="Clay material, 3/4 view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/clay-34.webp" data-caption="Clay — Vista 3/4">
+      <img src="images/chair/clay-34.webp" alt="Materiale clay, vista 3/4" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/clay-arm.webp" data-caption="Clay — Arm view">
-      <img src="images/chair/clay-arm.webp" alt="Clay material, Arm view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/clay-arm.webp" data-caption="Clay — Bracciolo">
+      <img src="images/chair/clay-arm.webp" alt="Materiale clay, bracciolo" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/clay-back.webp" data-caption="Clay — Back view">
-      <img src="images/chair/clay-back.webp" alt="Clay material, Back view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/clay-back.webp" data-caption="Clay — Retro">
+      <img src="images/chair/clay-back.webp" alt="Materiale clay, retro" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/clay-base.webp" data-caption="Clay — Base view">
-      <img src="images/chair/clay-base.webp" alt="Clay material, Base view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/clay-base.webp" data-caption="Clay — Basamento">
+      <img src="images/chair/clay-base.webp" alt="Materiale clay, basamento" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/clay-front.webp" data-caption="Clay — Front view">
-      <img src="images/chair/clay-front.webp" alt="Clay material, Front view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/clay-front.webp" data-caption="Clay — Fronte">
+      <img src="images/chair/clay-front.webp" alt="Materiale clay, fronte" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/clay-top.webp" data-caption="Clay — Top view">
-      <img src="images/chair/clay-top.webp" alt="Clay material, Top view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/clay-top.webp" data-caption="Clay — Dall'alto">
+      <img src="images/chair/clay-top.webp" alt="Materiale clay, dall'alto" loading="lazy" decoding="async">
     </button>
   </section>
 
   <!-- ═══════════════ RENDER: seis vistas ═══════════════ -->
   <section class="sheet" data-gallery="render-views" data-reveal>
-    <button class="tile w2 ar-1" data-full="images/chair/render_perspective.webp" data-caption="Render — Perspective">
-      <img src="images/chair/render_perspective.webp" alt="Chair render, Perspective view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/render_perspective.webp" data-caption="Render — Prospettiva">
+      <img src="images/chair/render_perspective.webp" alt="Render della chaise, vista prospettica" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/render_close1.webp" data-caption="Render — Close-up 1">
-      <img src="images/chair/render_close1.webp" alt="Chair render, Close-up 1 view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/render_close1.webp" data-caption="Render — Dettaglio 1">
+      <img src="images/chair/render_close1.webp" alt="Render della chaise, dettaglio 1" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/render_side.webp" data-caption="Render — Side">
-      <img src="images/chair/render_side.webp" alt="Chair render, Side view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/render_side.webp" data-caption="Render — Laterale">
+      <img src="images/chair/render_side.webp" alt="Render della chaise, vista laterale" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/render_close2.webp" data-caption="Render — Close-up 2">
-      <img src="images/chair/render_close2.webp" alt="Chair render, Close-up 2 view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/render_close2.webp" data-caption="Render — Dettaglio 2">
+      <img src="images/chair/render_close2.webp" alt="Render della chaise, dettaglio 2" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/render_front.webp" data-caption="Render — Front">
-      <img src="images/chair/render_front.webp" alt="Chair render, Front view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/render_front.webp" data-caption="Render — Fronte">
+      <img src="images/chair/render_front.webp" alt="Render della chaise, vista frontale" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/render_top.webp" data-caption="Render — Top">
-      <img src="images/chair/render_top.webp" alt="Chair render, Top view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/render_top.webp" data-caption="Render — Dall'alto">
+      <img src="images/chair/render_top.webp" alt="Render della chaise, vista dall'alto" loading="lazy" decoding="async">
     </button>
+  </section>
+
+  <!-- ═══════════════ 01 VIEWER ═══════════════ -->
+  <section class="sheet" id="viewer" data-reveal>
+    <div class="cell cell--text w3">
+      <span class="idx">01</span>
+      <h2 class="h2">La mesh finale, <em>nel tuo browser.</em></h2>
+      <p class="line">Orbita, zooma, attiva il wireframe.</p>
+    </div>
+
+    <!-- Dois painéis 3D, um por LOD. Os botões de vista (fronte/laterale/
+         dall'alto/3-4) e o seletor de LOD saíram: com os dois modelos na
+         tela ao mesmo tempo não há o que alternar, e as câmeras são
+         espelhadas (arraste um, o outro acompanha) — ver viewer.js.
+         Os ids viewerStage/viewerCanvas ficam como estão: é por eles que o
+         main.js faz o fullscreen e o watchdog do turntable. -->
+    <div class="viewer-pair w9" id="viewerStage">
+      <div class="viewer-pane">
+        <div class="viewer__canvas" id="viewerCanvas"></div>
+        <span class="plate-pill" aria-hidden="true">Bassa</span>
+        <p class="viewer__status" id="statusLow">Caricamento…</p>
+      </div>
+
+      <div class="viewer-pane">
+        <div class="viewer__canvas" id="viewerCanvasHigh"></div>
+        <span class="plate-pill" aria-hidden="true">Alta</span>
+        <p class="viewer__status" id="statusHigh">Caricamento…</p>
+      </div>
+
+      <!-- Fallback: turntable por sequência de imagens. Cobre os DOIS
+           painéis (inset:0 no CSS), então basta mostrá-lo — não é preciso
+           esconder os painéis um a um. -->
+      <div class="viewer__fallback" id="viewerFallback" hidden>
+        <img id="ttFrame" src="assets/img/turntable/frame-001.webp" alt="Fotogramma del turntable della chaise" draggable="false">
+        <p class="viewer__hint">Trascina per ruotare · 36 fotogrammi</p>
+      </div>
+
+      <div class="viewer__ui">
+        <button class="chip" id="btnWire" aria-pressed="false">Wireframe</button>
+        <button class="chip" id="btnSpin" aria-pressed="true">Rotazione auto</button>
+        <button class="chip" id="btnFull">Schermo intero</button>
+      </div>
+    </div>
   </section>
 
   <!-- ═══════════════ PIPELINE: Postproduction ═══════════════ -->
   <section class="sheet sheet--plain" id="post" data-reveal>
     <dl class="data data--1 pipeline">
-      <div><dt>Postproduction</dt><dd>Done in 3dsMax composition, Photoshop + AI</dd></div>
+      <div><dt>Postproduzione</dt><dd>Realizzata in composizione 3dsMax, Photoshop + AI</dd></div>
     </dl>
   </section>
 
   <!-- ═══════════════ MOODS: cinco variantes ═══════════════ -->
   <section class="sheet" data-reveal>
     <div class="strip" data-gallery="mood-views">
-    <button class="tile ar-1" data-full="images/chair/mood-1.webp" data-caption="Ivory canvas · navy piping · whitewashed oak">
-      <img src="images/chair/mood-1.webp" alt="Riviera variant: Ivory canvas · navy piping · whitewashed oak" loading="lazy" decoding="async">
+    <button class="tile ar-1" data-full="images/chair/mood-1.webp" data-caption="Tela avorio · profilo blu navy · rovere sbiancato">
+      <img src="images/chair/mood-1.webp" alt="Variante Riviera: tela avorio · profilo blu navy · rovere sbiancato" loading="lazy" decoding="async">
     </button>
-    <button class="tile ar-1" data-full="images/chair/mood-2.webp" data-caption="Stone grey leather · bleached oak">
-      <img src="images/chair/mood-2.webp" alt="Atelier variant: Stone grey leather · bleached oak" loading="lazy" decoding="async">
+    <button class="tile ar-1" data-full="images/chair/mood-2.webp" data-caption="Pelle grigio pietra · rovere decolorato">
+      <img src="images/chair/mood-2.webp" alt="Variante Atelier: pelle grigio pietra · rovere decolorato" loading="lazy" decoding="async">
     </button>
-    <button class="tile ar-1" data-full="images/chair/mood-3.webp" data-caption="Cognac aniline leather · dark walnut">
-      <img src="images/chair/mood-3.webp" alt="Club variant: Cognac aniline leather · dark walnut" loading="lazy" decoding="async">
+    <button class="tile ar-1" data-full="images/chair/mood-3.webp" data-caption="Pelle anilina cognac · noce scuro">
+      <img src="images/chair/mood-3.webp" alt="Variante Club: pelle anilina cognac · noce scuro" loading="lazy" decoding="async">
     </button>
-    <button class="tile ar-1" data-full="images/chair/mood-4.webp" data-caption="Raw linen · dark timber base">
-      <img src="images/chair/mood-4.webp" alt="Foundry variant: Raw linen · dark timber base" loading="lazy" decoding="async">
+    <button class="tile ar-1" data-full="images/chair/mood-4.webp" data-caption="Lino grezzo · basamento in legno scuro">
+      <img src="images/chair/mood-4.webp" alt="Variante Foundry: lino grezzo · basamento in legno scuro" loading="lazy" decoding="async">
     </button>
-    <button class="tile ar-1" data-full="images/chair/mood-5.webp" data-caption="Cream bouclé · oiled walnut">
-      <img src="images/chair/mood-5.webp" alt="Salon variant: Cream bouclé · oiled walnut" loading="lazy" decoding="async">
+    <button class="tile ar-1" data-full="images/chair/mood-5.webp" data-caption="Bouclé crema · noce oliato">
+      <img src="images/chair/mood-5.webp" alt="Variante Salon: bouclé crema · noce oliato" loading="lazy" decoding="async">
     </button>
     </div>
   </section>
 
   <!-- ═══════════════ POSTPRO: seis vistas ═══════════════ -->
   <section class="sheet" data-gallery="postpro-views" data-reveal>
-    <button class="tile w2 ar-1" data-full="images/chair/leather-34.webp" data-caption="Leather — 3/4 view">
-      <img src="images/chair/leather-34.webp" alt="Leather material, 3/4 view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/leather-34.webp" data-caption="Pelle — Vista 3/4">
+      <img src="images/chair/leather-34.webp" alt="Materiale pelle, vista 3/4" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/leather-arm.webp" data-caption="Leather — Arm view">
-      <img src="images/chair/leather-arm.webp" alt="Leather material, Arm view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/leather-arm.webp" data-caption="Pelle — Bracciolo">
+      <img src="images/chair/leather-arm.webp" alt="Materiale pelle, bracciolo" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/leather-back.webp" data-caption="Leather — Back view">
-      <img src="images/chair/leather-back.webp" alt="Leather material, Back view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/leather-back.webp" data-caption="Pelle — Retro">
+      <img src="images/chair/leather-back.webp" alt="Materiale pelle, retro" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/leather-base.webp" data-caption="Leather — Base view">
-      <img src="images/chair/leather-base.webp" alt="Leather material, Base view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/leather-base.webp" data-caption="Pelle — Basamento">
+      <img src="images/chair/leather-base.webp" alt="Materiale pelle, basamento" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/leather-front.webp" data-caption="Leather — Front view">
-      <img src="images/chair/leather-front.webp" alt="Leather material, Front view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/leather-front.webp" data-caption="Pelle — Fronte">
+      <img src="images/chair/leather-front.webp" alt="Materiale pelle, fronte" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/leather-top.webp" data-caption="Leather — Top view">
-      <img src="images/chair/leather-top.webp" alt="Leather material, Top view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/leather-top.webp" data-caption="Pelle — Dall'alto">
+      <img src="images/chair/leather-top.webp" alt="Materiale pelle, dall'alto" loading="lazy" decoding="async">
     </button>
   </section>
 
   <!-- ═══════════════ LINEN: seis vistas ═══════════════ -->
   <section class="sheet" data-gallery="linen-views" data-reveal>
-    <button class="tile w2 ar-1" data-full="images/chair/linen-34.webp" data-caption="Linen — 3/4 view">
-      <img src="images/chair/linen-34.webp" alt="Linen material, 3/4 view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/linen-34.webp" data-caption="Lino — Vista 3/4">
+      <img src="images/chair/linen-34.webp" alt="Materiale lino, vista 3/4" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/linen-arm.webp" data-caption="Linen — Arm view">
-      <img src="images/chair/linen-arm.webp" alt="Linen material, Arm view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/linen-arm.webp" data-caption="Lino — Bracciolo">
+      <img src="images/chair/linen-arm.webp" alt="Materiale lino, bracciolo" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/linen-back.webp" data-caption="Linen — Back view">
-      <img src="images/chair/linen-back.webp" alt="Linen material, Back view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/linen-back.webp" data-caption="Lino — Retro">
+      <img src="images/chair/linen-back.webp" alt="Materiale lino, retro" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/linen-base.webp" data-caption="Linen — Base view">
-      <img src="images/chair/linen-base.webp" alt="Linen material, Base view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/linen-base.webp" data-caption="Lino — Basamento">
+      <img src="images/chair/linen-base.webp" alt="Materiale lino, basamento" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/linen-front.webp" data-caption="Linen — Front view">
-      <img src="images/chair/linen-front.webp" alt="Linen material, Front view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/linen-front.webp" data-caption="Lino — Fronte">
+      <img src="images/chair/linen-front.webp" alt="Materiale lino, fronte" loading="lazy" decoding="async">
     </button>
-    <button class="tile w2 ar-1" data-full="images/chair/linen-top.webp" data-caption="Linen — Top view">
-      <img src="images/chair/linen-top.webp" alt="Linen material, Top view" loading="lazy" decoding="async">
+    <button class="tile w2 ar-1" data-full="images/chair/linen-top.webp" data-caption="Lino — Dall'alto">
+      <img src="images/chair/linen-top.webp" alt="Materiale lino, dall'alto" loading="lazy" decoding="async">
     </button>
   </section>
 
   <!-- ═══════════════ INTERIOR: seis vistas (1 render pronto + 5 pendentes) ═══════════════ -->
   <section class="sheet" id="interior" data-reveal>
-    <div class="cell cell--text w12">
-      <span class="idx">—</span>
-      <h2 class="h2">Interior <em>scene.</em></h2>
+    <div class="cell cell--text cell--center w12">
+      <h2 class="h2">Scena <em>d'interni</em></h2>
     </div>
 
-    <div class="strip strip--6" data-gallery="interior-views">
-      <button class="tile ar-1" data-full="images/chair/interior.webp" data-caption="Interior — Living room">
-        <img src="images/chair/interior.webp" alt="Interior render of the chair in a living-room scene" loading="lazy" decoding="async">
+    <!-- referencia -> processo -> final. As duas primeiras sao 33/14 (mesma
+         razao das quatro chapas abaixo) e a ultima e 16/9: as colunas do
+         .strip--concept sao 297:297:224, que e exatamente 33/14 : 33/14 :
+         16/9, entao as tres saem com a MESMA altura sem recortar nenhuma.
+         Mexer numa dessas proporcoes desalinha a fileira. -->
+    <div class="strip strip--concept" data-gallery="interior-concept">
+      <button class="tile ar-cine" data-full="images/chair/interior-concept.webp" data-caption="Concept — Riferimento e interpretazione">
+        <img src="images/chair/interior-concept.webp" alt="Tavola di concept: il post d'interni di riferimento accanto all'interpretazione modellata della stessa sala ad arco" loading="lazy" decoding="async">
+        <span class="plate-pill" aria-hidden="true">Concept</span>
       </button>
-      <div class="tile tile--pending ar-1"></div>
-      <div class="tile tile--pending ar-1"></div>
-      <div class="tile tile--pending ar-1"></div>
-      <div class="tile tile--pending ar-1"></div>
-      <div class="tile tile--pending ar-1"></div>
+      <button class="tile ar-cine" data-full="images/chair/interior-concept2.webp" data-caption="Concept — Dal blockout al set allestito">
+        <img src="images/chair/interior-concept2.webp" alt="Progressione in sei fotogrammi della scena, dal blockout grigio con una figura fino al set completamente allestito" loading="lazy" decoding="async">
+        <span class="plate-pill" aria-hidden="true">Processo</span>
+      </button>
+      <!-- decomposição do render: a mesma câmera em seis passes. Cada quadro
+           traz data-pill, então a etiqueta se renomeia ao aparecer — aqui o
+           que muda entre os quadros É o passe, ao contrário das horas do dia
+           logo abaixo, onde a etiqueta fica parada. -->
+      <div class="tile ar-169 ishot" data-full="images/chair/interior-final.webp" data-caption="Interni — Render finale">
+        <button class="ishot__open" type="button" aria-label="Apri i passaggi di render della scena d'interni">
+          <img class="ishot__img is-active" src="images/chair/interior-final.webp" alt="Render finale d'interni: la sala ad arco con lampade a sospensione, verde e le sedute al loro posto" loading="lazy" decoding="async"
+               data-caption="Interni — Render finale" data-pill="Render grezzo">
+          <img class="ishot__img" src="images/chair/interior-final-clay.webp" alt="Render clay della stessa inquadratura, senza materiali" loading="lazy" decoding="async"
+               data-caption="Interni — Clay" data-pill="Clay">
+          <img class="ishot__img" src="images/chair/interior-final-color.webp" alt="Viewport shaded della stessa inquadratura, con i materiali applicati" loading="lazy" decoding="async"
+               data-caption="Interni — Viewport shaded" data-pill="Viewport shaded">
+          <img class="ishot__img" src="images/chair/interior-final-id.webp" alt="Passaggio ID materiali: ogni elemento della scena in un colore piatto" loading="lazy" decoding="async"
+               data-caption="Interni — Pass ID" data-pill="Pass ID">
+          <img class="ishot__img" src="images/chair/interior-final-clay2.webp" alt="Viewport clay della stessa inquadratura, in tinta unita" loading="lazy" decoding="async"
+               data-caption="Interni — Viewport clay" data-pill="Viewport clay">
+        </button>
+        <span class="plate-pill" aria-hidden="true">Render grezzo</span>
+        <button class="ishot__nav ishot__nav--prev" type="button" aria-label="Passaggio precedente"></button>
+        <button class="ishot__nav ishot__nav--next" type="button" aria-label="Passaggio successivo"></button>
+      </div>
+    </div>
+
+    <!-- quatro horas do dia, mesma camera: a fileira so faz sentido se o
+         enquadramento nao mudar entre elas — por isso .ar-cine (a razao exata
+         dos arquivos) em vez de um recorte. Ordem cronologica.
+
+         Cada chapa e um mini-slider de dois quadros (vazio / com pessoas),
+         girando sozinho a cada 10s — ver "Interior shots" em main.js.
+         O .tile continua sendo quem carrega data-full/data-caption: e nele
+         que a lightbox delegada (main.js) bate com closest('.tile[data-full]'),
+         entao o slider entra por dentro sem mexer na lightbox. As setas NAO
+         podem morar dentro do botao que abre a lightbox (button dentro de
+         button e invalido) — por isso sao irmas dele, sobrepostas via CSS. -->
+    <div class="strip strip--2" data-gallery="interior-views">
+      <div class="tile ar-cine ishot" data-full="images/chair/interior-morning.webp" data-caption="Interni — Mattino">
+        <button class="ishot__open" type="button" aria-label="Apri il render d'interni del mattino">
+          <img class="ishot__img is-active" src="images/chair/interior-morning.webp" alt="Scena d'interni con la luce fredda e coperta del mattino" loading="lazy" decoding="async"
+               data-caption="Interni — Mattino">
+          <img class="ishot__img" src="images/chair/interior-morning-people.webp" alt="Scena d'interni con la luce fredda del mattino, con persone sedute nella sala" loading="lazy" decoding="async"
+               data-caption="Interni — Mattino, con persone">
+        </button>
+        <span class="plate-pill" aria-hidden="true">Mattino</span>
+        <button class="ishot__nav ishot__nav--prev" type="button" aria-label="Fotogramma precedente — mattino"></button>
+        <button class="ishot__nav ishot__nav--next" type="button" aria-label="Fotogramma successivo — mattino"></button>
+      </div>
+
+      <div class="tile ar-cine ishot" data-full="images/chair/interior-afternoon.webp" data-caption="Interni — Pomeriggio">
+        <button class="ishot__open" type="button" aria-label="Apri il render d'interni del pomeriggio">
+          <img class="ishot__img is-active" src="images/chair/interior-afternoon.webp" alt="Scena d'interni nel sole caldo del pomeriggio, con chiazze di luce sulla parete" loading="lazy" decoding="async"
+               data-caption="Interni — Pomeriggio">
+          <img class="ishot__img" src="images/chair/interior-afternoon-people.webp" alt="Scena d'interni nel sole caldo del pomeriggio, con persone sedute nella sala" loading="lazy" decoding="async"
+               data-caption="Interni — Pomeriggio, con persone">
+        </button>
+        <span class="plate-pill" aria-hidden="true">Pomeriggio</span>
+        <button class="ishot__nav ishot__nav--prev" type="button" aria-label="Fotogramma precedente — pomeriggio"></button>
+        <button class="ishot__nav ishot__nav--next" type="button" aria-label="Fotogramma successivo — pomeriggio"></button>
+      </div>
+
+      <div class="tile ar-cine ishot" data-full="images/chair/interior-sunset.webp" data-caption="Interni — Tramonto">
+        <button class="ishot__open" type="button" aria-label="Apri il render d'interni del tramonto">
+          <img class="ishot__img is-active" src="images/chair/interior-sunset.webp" alt="Scena d'interni al tramonto, luce dorata sui rivestimenti in pelle cuoio" loading="lazy" decoding="async"
+               data-caption="Interni — Tramonto">
+          <img class="ishot__img" src="images/chair/interior-sunset-people.webp" alt="Scena d'interni al tramonto, con persone sedute tra le poltrone in pelle cuoio" loading="lazy" decoding="async"
+               data-caption="Interni — Tramonto, con persone">
+        </button>
+        <span class="plate-pill" aria-hidden="true">Tramonto</span>
+        <button class="ishot__nav ishot__nav--prev" type="button" aria-label="Fotogramma precedente — tramonto"></button>
+        <button class="ishot__nav ishot__nav--next" type="button" aria-label="Fotogramma successivo — tramonto"></button>
+      </div>
+
+      <div class="tile ar-cine ishot" data-full="images/chair/interior-night.webp" data-caption="Interni — Notte">
+        <button class="ishot__open" type="button" aria-label="Apri il render d'interni notturno">
+          <img class="ishot__img is-active" src="images/chair/interior-night.webp" alt="Scena d'interni di notte, crepuscolo blu con le lampade a sospensione accese" loading="lazy" decoding="async"
+               data-caption="Interni — Notte">
+          <img class="ishot__img" src="images/chair/interior-night-people.webp" alt="Scena d'interni di notte, con persone sedute sotto le lampade a sospensione accese" loading="lazy" decoding="async"
+               data-caption="Interni — Notte, con persone">
+        </button>
+        <span class="plate-pill" aria-hidden="true">Notte</span>
+        <button class="ishot__nav ishot__nav--prev" type="button" aria-label="Fotogramma precedente — notte"></button>
+        <button class="ishot__nav ishot__nav--next" type="button" aria-label="Fotogramma successivo — notte"></button>
+      </div>
     </div>
   </section>
 
   <!-- Modal do filme com áudio -->
-  <div class="modal" id="filmModal" role="dialog" aria-modal="true" aria-label="The story of the chair" hidden>
-    <button class="modal__close" id="filmClose" aria-label="Close">✕</button>
+  <div class="modal" id="filmModal" role="dialog" aria-modal="true" aria-label="La storia della chaise" hidden>
+    <button class="modal__close" id="filmClose" aria-label="Chiudi">✕</button>
     <div class="modal__frame">
       <video id="filmVideo" controls playsinline preload="metadata" poster="assets/video/story-poster.jpg">
         <source src="assets/video/story.mp4" type="video/mp4">
@@ -327,71 +478,40 @@
     </div>
   </div>
 
-  <!-- ═══════════════ 01 VIEWER ═══════════════ -->
-  <section class="sheet" id="viewer" data-reveal>
-    <div class="cell cell--text w3">
-      <span class="idx">01</span>
-      <h2 class="h2">The shipped mesh, <em>in your browser.</em></h2>
-      <p class="line">Orbit, zoom, toggle the wireframe.</p>
-    </div>
-
-    <div class="viewer w9" id="viewerStage">
-      <div class="viewer__canvas" id="viewerCanvas"></div>
-
-      <!-- Fallback: turntable por sequência de imagens (enquanto não há .glb) -->
-      <div class="viewer__fallback" id="viewerFallback" hidden>
-        <img id="ttFrame" src="assets/img/turntable/frame-001.webp" alt="Turntable frame of the chair" draggable="false">
-        <p class="viewer__hint">Drag to rotate · 36 frames</p>
-      </div>
-
-      <div class="viewer__ui">
-        <button class="chip" data-view="front">Front</button>
-        <button class="chip" data-view="three">3/4</button>
-        <button class="chip" data-view="side">Side</button>
-        <button class="chip" data-view="top">Top</button>
-        <span class="viewer__sep"></span>
-        <button class="chip" data-lod="low" aria-pressed="true">Low</button>
-        <button class="chip" data-lod="high" aria-pressed="false">High <span class="chip__meta">5.8 MB</span></button>
-        <span class="viewer__sep"></span>
-        <button class="chip" id="btnWire" aria-pressed="false">Wireframe</button>
-        <button class="chip" id="btnSpin" aria-pressed="true">Auto-rotate</button>
-        <button class="chip" id="btnFull">Fullscreen</button>
-      </div>
-
-      <p class="viewer__status" id="viewerStatus">Loading…</p>
-    </div>
-  </section>
-
 </main>
 
+<!-- Rodapé = navegação. Mesmas âncoras do menu do topo, mais o retorno ao
+     início: quem chega ao fim da página não precisa rolar de volta pra
+     trocar de seção. Classe própria (.foot__link, não .nav__link) porque o
+     scroll-spy do main.js marca a seção ativa em .nav__link — aqui embaixo
+     esse destaque não teria o que informar. -->
 <footer class="foot">
-  <div class="foot__in">
-    <div>
-      <p class="foot__name">Juscelio Diaz</p>
-      <p class="foot__role">3D Artist — modeling, lookdev, rendering</p>
-    </div>
-    <p class="foot__links">
-      <a href="mailto:juscelio.santos@neoramastudio.com">Email</a>
-      <a href="#" target="_blank" rel="noopener">Portfolio</a>
-      <a href="#" target="_blank" rel="noopener">ArtStation</a>
-      <a href="#" target="_blank" rel="noopener">LinkedIn</a>
-    </p>
-    <p class="foot__meta">PLINTH / 001 — prepared for review, <span id="year">2026</span>. All work original.</p>
-  </div>
+  <nav class="foot__nav" aria-label="Navigazione rapida">
+    <a class="foot__link foot__link--top" href="#top">
+      <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
+        <path d="M12 5l-7 7h4v7h6v-7h4z" fill="currentColor"/>
+      </svg>
+      Torna su
+    </a>
+    <a class="foot__link" href="#modeling">Modellazione</a>
+    <a class="foot__link" href="#post">Postproduzione</a>
+    <a class="foot__link" href="#interior">Interni</a>
+    <a class="foot__link" href="#viewer">01 3D</a>
+  </nav>
 </footer>
 
 <!-- Lightbox -->
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
-  <button class="lb__close" id="lbClose" aria-label="Close">✕</button>
-  <button class="lb__nav lb__nav--prev" id="lbPrev" aria-label="Previous">‹</button>
-  <button class="lb__nav lb__nav--next" id="lbNext" aria-label="Next">›</button>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Visualizzatore immagini" hidden>
+  <button class="lb__close" id="lbClose" aria-label="Chiudi">✕</button>
+  <button class="lb__nav lb__nav--prev" id="lbPrev" aria-label="Precedente">‹</button>
+  <button class="lb__nav lb__nav--next" id="lbNext" aria-label="Successivo">›</button>
   <figure class="lb__fig">
     <img id="lbImg" src="" alt="">
     <figcaption><span id="lbCap"></span><em id="lbCount"></em></figcaption>
   </figure>
 </div>
 
-<script src="assets/js/main.js?v=24" defer></script>
+<script src="assets/js/main.js?v=29" defer></script>
 
 <!-- three.js (ES modules via CDN). Troque a versão só se testar antes. -->
 <script type="importmap">
@@ -402,6 +522,6 @@
   }
 }
 </script>
-<script type="module" src="assets/js/viewer.js?v=5"></script>
+<script type="module" src="assets/js/viewer.js?v=10"></script>
 </body>
 </html>

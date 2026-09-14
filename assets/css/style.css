@@ -243,35 +243,75 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .viewer__ui > .chip{ border:0; }
 .hero__actions{ margin-top:1.6rem; }
 
-/* hero facts ride the sheet grid so the page starts aligned */
-.hero__facts{
-  position:relative; z-index:2; margin:0;
-  display:grid; grid-template-columns:repeat(6,1fr);
-  gap:var(--hair); background:var(--line);
-  border-top:1px solid var(--line);
-}
-.hero__facts > div{ background:rgba(11,11,12,.72); padding:var(--pad); }
-.hero__facts dt{ font:var(--label); font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); }
-.hero__facts dd{ margin:.4rem 0 0; font-size:.82rem; color:var(--txt); }
+/* ficha = icone/logo + texto (id embutido no eyebrow) + imagem, um card so,
+   sem fio entre os dois — antes eram duas fileiras separadas (hero__facts
+   flutuando sobre o video, depois a chapa de imagens numa section
+   diferente); agora moram juntos dentro do mesmo .fact-plate, na mesma
+   faixa .strip--6 da Index. Icone/logo volta a ser a caixa solida de 64px
+   na frente do texto, como na primeira versao — só o numero de chapa (no
+   proprio eyebrow) e a etiqueta sobre a imagem sao novos. */
+.fact-plate{ display:flex; flex-direction:column; background:var(--bg); }
 
-/* fato com anexo: icone maior, na frente do texto (nao empilhado embaixo) */
-.fact--dl{ display:flex; flex-direction:row; align-items:center; gap:1rem; }
-.fact-dl__btn{
+.fact-plate__head{
+  display:flex; flex-direction:row; align-items:center; gap:1rem;
+  background:var(--bg-2); padding:var(--pad);
+}
+
+/* icone: caixa solida 64px, na frente do texto (nao empilhado embaixo) */
+.fact-plate__icon{
   flex:0 0 auto;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.35rem;
   width:64px; min-height:64px; padding:.5rem;
   border:1px solid var(--accent); background:var(--accent); color:#0b0b0c;
   transition:background .25s var(--ease), border-color .25s var(--ease), filter .25s var(--ease);
 }
-.fact-dl__btn svg{ color:#0b0b0c; }
-.fact-dl__btn:hover{ filter:brightness(1.1); }
-.fact-dl__label{ font:var(--label); font-size:.5rem; letter-spacing:.06em; color:#0b0b0c; text-transform:uppercase; }
+.fact-plate__icon svg{ color:#0b0b0c; }
+.fact-plate__icon:hover{ filter:brightness(1.1); }
+.fact-plate__icon-label{ font:var(--label); font-size:.5rem; letter-spacing:.06em; color:#0b0b0c; text-transform:uppercase; }
 
 /* variante logo: mesma caixa preenchida, sem link — so a marca do software,
    nao e uma acao entao nao e <a>/<button> */
-.fact-dl__btn--logo{ cursor:default; padding:0; overflow:hidden; }
-.fact-dl__btn--logo img{ width:100%; height:100%; object-fit:cover; }
-.fact--dl__txt{ min-width:0; }
+.fact-plate__icon--mark{ cursor:default; padding:0; overflow:hidden; }
+.fact-plate__icon--mark img{ width:100%; height:100%; object-fit:cover; }
+
+.fact-plate__copy{ flex:1 1 auto; min-width:0; margin:0; }
+.fact-plate__eyebrow{
+  margin:0; font:var(--label); font-size:.6rem; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--muted);
+}
+.fact-plate__eyebrow-id{ color:var(--accent); font-variant-numeric:tabular-nums; }
+/* min-height reserva sempre 2 linhas — titulos mais curtos (ex: "UV Mapping
+   done in Blender") nao deixam o cabecalho mais baixo que o do vizinho mais
+   longo; sem isso o grid da .strip--6 esticava o .fact-plate mais baixo pra
+   bater com o mais alto, e a sobra virava um vao preto embaixo da imagem. */
+.fact-plate__title{
+  margin:.4rem 0 0; font-size:.82rem; line-height:1.35; color:var(--txt);
+  min-height:2.7em;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+/* mascara embaixo da imagem: escurece da base pro centro. Com a chapa ja na
+   proporcao das imagens (.ar-index) nao ha mais sobra pra esconder — o
+   degrade agora serve so pra etiqueta ter fundo garantido, seja qual for o
+   conteudo que caia embaixo dela (render claro de estudio ou viewport escuro) */
+.fact-plate .tile::after{
+  content:""; position:absolute; z-index:1; inset:auto 0 0 0; height:50%;
+  background:linear-gradient(to top, rgba(0,0,0,.8) 0%, rgba(0,0,0,0) 100%);
+  pointer-events:none;
+}
+
+/* etiqueta sobre a imagem: mesma familia dos numeros de chapa do resto do
+   site, mas texto (o estagio do pipeline), nao um contador — e acende no
+   hover igual ao counter() das outras chapas */
+.fact-plate__tag{
+  position:absolute; z-index:2; left:10px; bottom:8px;
+  font:var(--label); font-size:.56rem; letter-spacing:.1em; text-transform:uppercase;
+  color:rgba(241,238,233,.88);
+  text-shadow:0 1px 4px rgba(0,0,0,.7);
+  transition:color .3s var(--ease);
+}
+.fact-plate .tile:hover .fact-plate__tag,
+.fact-plate .tile:focus-visible .fact-plate__tag{ color:var(--accent); }
 
 
 /* ── The sheet ─────────────────────────────────────────── */
@@ -311,6 +351,14 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   padding:var(--pad);
 }
 .cell--text > .h2{ margin-top:0; }
+
+/* titulo de secao centrado na folha (as duas celulas w12: "Chaise Modeling"
+   e "Interior scene"). Como .cell--text e flex-column, centrar pede as duas
+   coisas: align-items centra a CAIXA do h2 dentro da celula, text-align
+   centra o TEXTO quando ele quebra em duas linhas no telefone. Nao vale pro
+   titulo do #viewer, que e w3 e alinha com o indice "01" a esquerda. */
+.cell--center{ align-items:center; text-align:center; }
+
 .cell--pad{ padding:var(--pad); }
 
 /* pipeline: e o mesmo .data.data--1 usado em qualquer bloco de chave/valor —
@@ -321,7 +369,9 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    entre chapas) ficava exposto como uma faixa cinza larga nas duas pontas.
    --bg aqui funde a linha inteira com o fundo da pagina. */
 .sheet--plain{ background:var(--bg); }
-.pipeline{ grid-column:5 / span 4; }
+/* 6 colunas das 12 (4 a 9 = centrado), antes eram 4: com 4 a frase da
+   Postproduzione nao cabia numa linha so e o "+ AI" caia sozinho embaixo */
+.pipeline{ grid-column:4 / span 6; }
 @media (max-width:1000px){ .pipeline{ grid-column:2 / span 4; } }
 @media (max-width:640px){ .pipeline{ grid-column:1 / -1; } }
 
@@ -335,7 +385,22 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   gap:var(--hair); background:var(--line);
 }
 /* faixa do indice tem 6, nao 5 — moods (o outro uso de .strip) fica em 5 */
-.strip--6{ grid-template-columns:repeat(6,1fr); }
+/* align-items:start = backstop: mesmo se um titulo ainda desalinhar as
+   alturas do cabecalho, o card nao estica pra bater com o vizinho mais alto */
+.strip--6{ grid-template-columns:repeat(6,1fr); align-items:start; }
+
+/* faixa de duas: as quatro horas do dia do #interior. Os renders sao 2.36:1
+   (cinema) — quatro lado a lado viravam frestas de ~170px de altura; em 2x2
+   cada chapa respira e a comparacao entre as luzes acontece por vizinhanca,
+   nao por scroll. */
+.strip--2{ grid-template-columns:repeat(2,1fr); }
+
+/* faixa do concept: duas chapas 33/14 + uma 16/9 na mesma fileira. As
+   colunas sao proporcionais as PROPRIAS razoes (33/14 : 33/14 : 16/9, x126
+   = 297:297:224) — e isso que faz as tres sairem exatamente com a mesma
+   altura sem recortar nenhuma. Com 1fr cada, a 16/9 ficaria mais alta que
+   as vizinhas e a fileira perderia a linha de base. */
+.strip--concept{ grid-template-columns:297fr 297fr 224fr; }
 
 .tile{
   display:block; position:relative; overflow:hidden; isolation:isolate;
@@ -381,15 +446,105 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   background:repeating-linear-gradient(-45deg, var(--bg-2) 0 10px, var(--bg-3) 10px 20px);
 }
 .tile--pending::after{
-  content:"Pending";
+  content:"In arrivo";
   font:var(--label); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
   color:var(--dim);
+}
+
+/* ── Interior shots: mini-slider de dois quadros ───────── */
+
+/* a chapa vira um empilhamento: os dois quadros ocupam a mesma area e o
+   ativo aparece por opacidade — nada de translate, pra camera nao "andar"
+   entre o quadro vazio e o com pessoas (e a mesma foto, so muda quem esta
+   nela; deslizar sugeriria que sao lugares diferentes). */
+.ishot{ cursor:default; }
+.ishot__open{
+  display:block; position:absolute; inset:0; z-index:1;
+  width:100%; height:100%; padding:0; border:0;
+  background:none; cursor:pointer;
+}
+/* transform/filter continuam na transicao: a regra base .tile img seria
+   sobrescrita por esta, e o zoom de hover das chapas passaria a saltar */
+.ishot__img{
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover;
+  opacity:0;
+  transition:opacity .9s var(--ease), transform 1s var(--ease-out), filter .45s var(--ease);
+}
+.ishot__img.is-active{ opacity:1; }
+
+/* etiqueta de chapa: nomeia a imagem por cima dela. Nasceu nas quatro horas
+   do dia, mas nao pertence ao slider — a fileira do concept usa a mesma
+   peca em .tile puro, por isso o nome e .plate-pill e nao .ishot__pill.
+   Mesmo material das setas (fundo escuro + blur + fio de 1px), pra lerem
+   como uma familia so. Vai no canto DIREITO porque o esquerdo ja e do
+   numero da chapa (.tile::before) — e tirar o numero daqui renumeraria as
+   chapas seguintes da folha.
+   Quadrada de proposito: --r e 0px no site inteiro ("nothing is rounded
+   here"); arredondar so esta seria o unico canto redondo da pagina.
+   pointer-events:none deixa o clique passar pro botao que abre a lightbox. */
+.plate-pill{
+  position:absolute; z-index:2; top:8px; right:10px;
+  padding:.45em .7em;
+  /* .73rem = os .56rem do resto das etiquetas +30%: a hora do dia e o que
+     diferencia uma chapa da outra, entao ela pede mais voz que um rotulo
+     generico sobre a imagem */
+  font:var(--label); font-size:.73rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--txt);
+  border:1px solid rgba(241,238,233,.25);
+  background:rgba(11,11,12,.55);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  pointer-events:none;
+}
+
+/* setas: irmas do botao que abre a lightbox, nunca filhas (button dentro de
+   button e invalido). Ficam discretas ate o hover/foco da chapa, mas no
+   toque — onde hover nao existe — ficam sempre visiveis. */
+.ishot__nav{
+  position:absolute; z-index:2; top:50%; transform:translateY(-50%);
+  width:44px; height:44px; padding:0;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(241,238,233,.25);
+  background:rgba(11,11,12,.55);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  color:var(--txt); cursor:pointer;
+  opacity:0; transition:opacity .3s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+}
+.ishot__nav--prev{ left:10px; }
+.ishot__nav--next{ right:10px; }
+.ishot:hover .ishot__nav,
+.ishot:focus-within .ishot__nav{ opacity:1; }
+.ishot__nav:hover{ background:var(--accent); border-color:var(--accent); color:#0b0b0c; }
+
+/* a seta em si: chevron desenhado em CSS, sem outro arquivo pra carregar */
+.ishot__nav::before{
+  content:""; width:9px; height:9px;
+  border-top:1.5px solid currentColor; border-right:1.5px solid currentColor;
+}
+.ishot__nav--prev::before{ transform:rotate(-135deg); margin-left:3px; }
+.ishot__nav--next::before{ transform:rotate(45deg);   margin-right:3px; }
+
+@media (hover:none){
+  .ishot__nav{ opacity:1; }
 }
 
 /* aspect ratios, only where a plate defines its own row height */
 .ar-1  { aspect-ratio:1/1;   }
 .ar-34 { aspect-ratio:3/4;   }
 .ar-32 { aspect-ratio:3/2;   }
+/* proporcao das proprias imagens do index (as seis ficam entre 1.617 e 1.645;
+   1400/860 = 1.628 cai no meio). Com a chapa nessa razao o object-fit:contain
+   do .tile--fit encosta nas quatro bordas: nao sobra letterbox (o "erro" de
+   vao escuro) e nao se corta nada da imagem. Nao use .ar-32 aqui — 3/2 e 8%
+   mais baixo que as imagens, e a diferenca voltava como faixa vazia. */
+.ar-index { aspect-ratio:1400/860; }
+/* proporcao dos renders de interior (6336x2688 = 33/14 exato). Na razao da
+   fonte o object-fit:cover do .tile nao chega a cortar nada — e aqui isso
+   importa mais que o normal: as quatro tem a camera identica, entao qualquer
+   recorte desalinharia o enquadramento e quebraria a comparacao. */
+.ar-cine { aspect-ratio:33/14; }
+/* o render final do #interior e 1920x1080 — 16/9 exato, sem recorte */
+.ar-169 { aspect-ratio:16/9; }
 
 /* ── Data rows: keys and values, no prose ──────────────── */
 
@@ -414,16 +569,58 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   margin:.45rem 0 0; font-size:.86rem; color:var(--txt); line-height:1.45;
   max-width:38ch;
 }
+
+/* pipeline centrado: o bloco ja mora nas colunas 4-9 da folha (.pipeline la
+   em cima), isto centra o conteudo DENTRO dele. O margin-inline:auto nao e
+   redundante: o dd tem max-width, entao sem ele a caixa do texto fica
+   encostada a esquerda e so o texto dentro dela centraliza — o dd sairia
+   deslocado em relacao ao dt. E precisa vir depois de .data dd: as duas
+   regras tem a mesma especificidade, quem decide e a ordem. */
+.pipeline{ text-align:center; }
+/* o max-width:38ch do .data dd e o que quebrava a frase em duas linhas: ela
+   tem 49 caracteres. 56ch da folga pra caber inteira sem virar uma linha
+   larga demais se alguem trocar o texto por um paragrafo. */
+.pipeline dd{ margin-inline:auto; max-width:56ch; }
+/* mais ar em volta do titulo: o --pad padrao das celulas da folha aperta um
+   bloco que e a unica coisa na fileira inteira */
+.pipeline > div{ padding-block:clamp(30px,4.5vw,54px); }
 /* ── 3D viewer ─────────────────────────────────────────── */
 
-.viewer{
+/* o par: dois painéis lado a lado, um por LOD, com o mesmo fio de 1px que
+   separa as chapas no resto da folha. A barra de botões e o turntable
+   ficam por cima dos DOIS (position:absolute em .viewer-pair), porque
+   comandam o par inteiro, não um painel. */
+.viewer-pair{
   position:relative;
-  background:radial-gradient(80% 60% at 50% 0%, #1d1d23 0%, var(--bg-2) 60%, #08080a 100%);
+  display:grid; grid-template-columns:repeat(2,1fr);
+  gap:var(--hair); background:var(--line);
   aspect-ratio:16/9; min-height:340px; overflow:hidden;
 }
+.viewer-pane{
+  position:relative; overflow:hidden;
+  background:radial-gradient(80% 60% at 50% 0%, #1d1d23 0%, var(--bg-2) 60%, #08080a 100%);
+}
+
+/* no telefone os dois painéis empilham: lado a lado cada um ficaria com
+   metade de uma tela estreita, onde não se distingue low de high */
+@media (max-width:640px){
+  .viewer-pair{ grid-template-columns:1fr; aspect-ratio:3/4; }
+}
+
 .viewer__canvas{ position:absolute; inset:0; }
 .viewer__canvas canvas{ display:block; width:100%; height:100%; touch-action:none; }
-.viewer__fallback{ position:absolute; inset:0; display:grid; place-items:center; cursor:ew-resize; }
+/* etiqueta do LOD vai pra ESQUERDA dentro do painel: o canto direito é do
+   .viewer__status (contagem de tris), que é justamente o número que se
+   compara entre os dois — os dois no mesmo canto se sobrepunham */
+.viewer-pane .plate-pill{ top:12px; left:12px; right:auto; }
+
+/* cobre os dois painéis: precisa de fundo próprio, senão o 3D aparece
+   por baixo do turntable */
+.viewer__fallback{
+  position:absolute; inset:0; z-index:2;
+  display:grid; place-items:center; cursor:ew-resize;
+  background:radial-gradient(80% 60% at 50% 0%, #1d1d23 0%, var(--bg-2) 60%, #08080a 100%);
+}
 .viewer__fallback[hidden]{ display:none; }
 .viewer__fallback img{ max-height:86%; width:auto; user-select:none; -webkit-user-drag:none; }
 .viewer__hint,
@@ -437,8 +634,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .viewer__ui{
   position:absolute; left:14px; bottom:14px; z-index:3;
 }
-/* com as costuras de 1px o separador viraria fio duplo */
-.viewer__sep{ display:none; }
 
 /* ── Buttons / chips ───────────────────────────────────── */
 
@@ -532,28 +727,35 @@ body.is-locked{ overflow:hidden; }
 
 /* ── Footer ────────────────────────────────────────────── */
 
-.foot{ border-top:1px solid var(--line); background:var(--bg-2); }
-.foot__in{
-  display:grid; grid-template-columns:1fr auto; align-items:end; gap:1.4rem;
-  padding:clamp(34px,5vh,60px) var(--gut);
+.foot{ border-top:1px solid var(--line); background:var(--line); }
+
+/* a mesma disciplina das chapas: células de 1fr separadas pelo fio de 1px
+   que o --line do pai mostra pelo gap. O rodapé lê como mais uma fileira
+   da folha, não como um bloco à parte com regras próprias. */
+.foot__nav{
+  display:grid; grid-template-columns:repeat(5,1fr);
+  gap:var(--hair);
 }
-.foot__name{
-  font-family:var(--display); font-weight:600;
-  font-size:clamp(1.5rem,3vw,2.3rem);
-  margin:0; line-height:1; letter-spacing:-.032em; color:var(--txt);
+.foot__link{
+  display:flex; align-items:center; justify-content:center; gap:.5em;
+  min-height:72px; padding:1rem var(--pad-sm);
+  background:var(--bg-2);
+  font:var(--label); font-size:.72rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--dim);
+  text-align:center;
+  transition:background .3s var(--ease), color .3s var(--ease);
 }
-.foot__role{ margin:.5rem 0 0; color:var(--muted); font-size:.85rem; }
-.foot__links{ display:flex; flex-wrap:wrap; gap:1.1rem; margin:0; }
-.foot__links a{
-  display:inline-flex; align-items:center; min-height:44px;
-  font:var(--label); font-size:.62rem; letter-spacing:.13em; text-transform:uppercase;
-  border-bottom:1px solid var(--line);
-  transition:border-color .3s var(--ease), color .3s var(--ease);
-}
-.foot__links a:hover{ border-color:var(--accent); color:var(--accent); }
-.foot__meta{
-  grid-column:1 / -1; margin:0;
-  font-family:var(--mono); font-size:.62rem; color:var(--dim); letter-spacing:.01em;
+.foot__link:hover,.foot__link:focus-visible{ background:var(--bg-3); color:var(--txt); }
+.foot__link--top{ color:var(--accent); }
+.foot__link--top:hover,.foot__link--top:focus-visible{ background:var(--accent); color:#0b0b0c; }
+
+@media (max-width:640px){
+  /* 5 células numa tela estreita dariam ~70px cada, e "Postproduzione"
+     quebraria em três linhas. Duas colunas, com o "Torna su" ocupando a
+     fileira inteira — é o atalho que mais se usa no fim da página. */
+  .foot__nav{ grid-template-columns:repeat(2,1fr); }
+  .foot__link--top{ grid-column:1 / -1; }
+  .foot__link{ min-height:60px; font-size:.66rem; }
 }
 
 /* ── Reveal ────────────────────────────────────────────── */
@@ -580,10 +782,14 @@ body.is-locked{ overflow:hidden; }
   .sheet{ grid-template-columns:repeat(6,1fr); }
   .sheet > .cell,.sheet > .w2,.sheet > .w3{ grid-column:span 3; }
   .strip{ grid-template-columns:repeat(3,1fr); }
+  /* a faixa de duas segura as 2 colunas aqui: em 3 as quatro horas do dia
+     quebrariam 3+1, com uma chapa orfa na segunda fileira */
+  .strip--2{ grid-template-columns:repeat(2,1fr); }
+  /* e a do concept segura as proporcoes: com repeat(3,1fr) as tres ficariam
+     da mesma largura, e a 16/9 sairia mais alta que as duas vizinhas */
+  .strip--concept{ grid-template-columns:297fr 297fr 224fr; }
   .sheet > .w6,.sheet > .w9,.sheet > .w12,
     .data--4{ grid-template-columns:repeat(2,1fr); }
-  .hero__facts{ grid-template-columns:repeat(2,1fr); }
-  .hero__facts > div{ padding-inline:var(--gut); }
 }
 
 @media (max-width:640px){
@@ -591,13 +797,17 @@ body.is-locked{ overflow:hidden; }
   .sheet > *{ grid-column:span 2; }
   .sheet > .half-sm{ grid-column:span 1; }
   .strip{ grid-template-columns:repeat(2,1fr); }
+  /* no telefone a faixa de duas empilha: 2.36:1 em meia tela viraria uma
+     fresta de ~80px, onde nao se le nem a cena nem a diferenca de luz */
+  .strip--2{ grid-template-columns:1fr; }
+  /* idem pro concept — e ali o contact sheet de seis quadros do concept2
+     seria ilegivel a um terco da largura */
+  .strip--concept{ grid-template-columns:1fr; }
     .cell--text.cell--row{ flex-direction:column; align-items:flex-start; gap:.5rem; }
   .cell--row .line{ margin-top:.2rem; }
   .data--4{ grid-template-columns:1fr; }
     .viewer{ aspect-ratio:4/5; }
   .viewer__ui{ left:10px; right:10px; bottom:10px; width:auto; }
-  .hero__facts{ grid-template-columns:1fr; }
-  .foot__in{ grid-template-columns:1fr; align-items:start; }
 
   .nav__toggle{ display:block; }
   .nav__menu{
