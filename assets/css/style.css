@@ -212,6 +212,13 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    inevitavel, mas fora deles o video aparece inteiro. */
 .hero{
   position:relative;
+  /* width:100% NAO e redundante com aspect-ratio: a razao resolve nos DOIS
+     sentidos. Sem largura definida, quando o min-height abaixo eleva a
+     altura, a razao infla a largura de volta (520px x 2.36 = 1227px) e a
+     secao estoura o viewport no telefone. Com a largura fixada, o
+     min-height so aumenta a altura e o video volta a recortar pelo cover,
+     que e o comportamento desejado nesse extremo. */
+  width:100%; max-width:100%;
   aspect-ratio:var(--hero-ar);
   min-height:min(520px, 88svh);
   max-height:100svh;
@@ -337,7 +344,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 .sheet{
   display:grid;
-  grid-template-columns:repeat(12,1fr);
+  grid-template-columns:repeat(12,minmax(0,1fr));
   grid-auto-flow:row dense;
   gap:var(--hair);
   background:var(--line);
@@ -392,19 +399,26 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    proprio de 5 resolve — mesma disciplina de fio de 1px do resto da folha */
 .strip{
   grid-column:span 12;
-  display:grid; grid-template-columns:repeat(5,1fr);
+  display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
   gap:var(--hair); background:var(--line);
+  min-width:0;
 }
+/* Item de grid nasce com min-width:auto e nao encolhe abaixo do proprio
+   min-content. No telefone isso fazia a faixa ficar mais larga que a tela e
+   a segunda coluna dos cards sair cortada — e como o body tem
+   overflow-x:hidden, o excesso era PERDIDO em vez de rolavel, que e o pior
+   dos dois. Vale pra .strip (item da folha) e pros filhos dela. */
+.strip > *{ min-width:0; }
 /* faixa do indice tem 6, nao 5 — moods (o outro uso de .strip) fica em 5 */
 /* align-items:start = backstop: mesmo se um titulo ainda desalinhar as
    alturas do cabecalho, o card nao estica pra bater com o vizinho mais alto */
-.strip--6{ grid-template-columns:repeat(6,1fr); align-items:start; }
+.strip--6{ grid-template-columns:repeat(6,minmax(0,1fr)); align-items:start; }
 
 /* faixa de duas: as quatro horas do dia do #interior. Os renders sao 2.36:1
    (cinema) — quatro lado a lado viravam frestas de ~170px de altura; em 2x2
    cada chapa respira e a comparacao entre as luzes acontece por vizinhanca,
    nao por scroll. */
-.strip--2{ grid-template-columns:repeat(2,1fr); }
+.strip--2{ grid-template-columns:repeat(2,minmax(0,1fr)); }
 
 /* faixa do concept: duas chapas 33/14 + uma 16/9 na mesma fileira. As
    colunas sao proporcionais as PROPRIAS razoes (33/14 : 33/14 : 16/9, x126
@@ -592,7 +606,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    comandam o par inteiro, não um painel. */
 .viewer-pair{
   position:relative;
-  display:grid; grid-template-columns:repeat(2,1fr);
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
   gap:var(--hair); background:var(--line);
   aspect-ratio:16/9; min-height:340px; overflow:hidden;
 }
@@ -741,7 +755,7 @@ body.is-locked{ overflow:hidden; }
    que o --line do pai mostra pelo gap. O rodapé lê como mais uma fileira
    da folha, não como um bloco à parte com regras próprias. */
 .foot__nav{
-  display:grid; grid-template-columns:repeat(5,1fr);
+  display:grid; grid-template-columns:repeat(5,minmax(0,1fr));
   gap:var(--hair);
 }
 .foot__link{
@@ -761,7 +775,7 @@ body.is-locked{ overflow:hidden; }
   /* 5 células numa tela estreita dariam ~70px cada, e "Postproduzione"
      quebraria em três linhas. Duas colunas, com o "Torna su" ocupando a
      fileira inteira — é o atalho que mais se usa no fim da página. */
-  .foot__nav{ grid-template-columns:repeat(2,1fr); }
+  .foot__nav{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   .foot__link--top{ grid-column:1 / -1; }
   .foot__link{ min-height:60px; font-size:.66rem; }
 }
@@ -787,21 +801,21 @@ body.is-locked{ overflow:hidden; }
 /* ── Responsive: remap the spans, keep the grid ────────── */
 
 @media (max-width:1000px){
-  .sheet{ grid-template-columns:repeat(6,1fr); }
+  .sheet{ grid-template-columns:repeat(6,minmax(0,1fr)); }
   .sheet > .cell,.sheet > .w2,.sheet > .w3{ grid-column:span 3; }
-  .strip{ grid-template-columns:repeat(3,1fr); }
+  .strip{ grid-template-columns:repeat(3,minmax(0,1fr)); }
   /* a faixa de duas segura as 2 colunas aqui: em 3 as quatro horas do dia
      quebrariam 3+1, com uma chapa orfa na segunda fileira */
-  .strip--2{ grid-template-columns:repeat(2,1fr); }
+  .strip--2{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   /* e a do concept segura as proporcoes: com repeat(3,1fr) as tres ficariam
      da mesma largura, e a 16/9 sairia mais alta que as duas vizinhas */
   .strip--concept{ grid-template-columns:297fr 297fr 224fr; }
 }
 
 @media (max-width:640px){
-  .sheet{ grid-template-columns:repeat(2,1fr); }
+  .sheet{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   .sheet > *{ grid-column:span 2; }
-  .strip{ grid-template-columns:repeat(2,1fr); }
+  .strip{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   /* no telefone a faixa de duas empilha: 2.36:1 em meia tela viraria uma
      fresta de ~80px, onde nao se le nem a cena nem a diferenca de luz */
   .strip--2{ grid-template-columns:1fr; }
