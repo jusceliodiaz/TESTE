@@ -675,58 +675,63 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .chip:disabled{ opacity:.45; cursor:default; }
 .chip[aria-pressed="true"]{ color:#0b0b0c; background:var(--accent); border-color:var(--accent); }
 
-/* ── Modal (film) ──────────────────────────────────────── */
+/* ── Filme (modal) ─────────────────────────────────────── */
 
-/* SEM backdrop-filter aqui, de proposito — e a unica diferenca que sobrou
-   entre este modal e o .lb, que usa a mesma receita e funciona:
-       .lb     backdrop-filter + <img>    -> ok
-       .modal  backdrop-filter + <video>  -> video ia parar atras da hero
-   Um <video> dentro de um elemento com backdrop-filter pode ser promovido
-   a hardware overlay: um plano composto pela GPU FORA do fluxo da pagina,
-   que ignora z-index e o recorte do container. Por isso o quadro escapava
-   da caixa (que media certo o tempo todo) e aparecia cortado atras da hero.
-   O fundo ja tem 92% de opacidade — o blur quase nao aparecia mesmo. */
-.modal{
-  position:fixed; inset:0; z-index:200; display:grid; place-items:center;
-  overflow:auto;
-  background:rgba(6,6,7,.97);
-  padding:var(--gut);
-  animation:fade .35s var(--ease);
+/* Reescrito do zero. O anterior colocava o video atras da hero, cortado.
+   Quatro decisoes, cada uma removendo um suspeito:
+
+   1. SEM backdrop-filter. Um <video> dentro de um elemento com
+      backdrop-filter pode ser promovido a hardware overlay — plano
+      composto pela GPU fora do fluxo da pagina, que ignora z-index e o
+      recorte do container. O .lb tem backdrop-filter e funciona, mas o
+      conteudo dele e <img>; a combinacao com <video> e que falhava.
+   2. Fundo 100% opaco: nada a compor por transparencia.
+   3. SEM aspect-ratio. A proporcao vem do proprio arquivo, por
+      max-width/max-height. O bug anterior nasceu justamente de uma razao
+      escrita a mao que ficou para tras quando o video mudou — aqui isso
+      nao pode mais acontecer.
+   4. flex em vez de grid + place-items:center. Naquele, conteudo mais
+      alto que a tela tem o TOPO cortado sem scroll que alcance. */
+.film{
+  position:fixed; inset:0; z-index:300;
+  display:flex; align-items:center; justify-content:center;
+  padding:clamp(14px,4vw,56px);
+  background:#070708;
+  animation:fade .3s var(--ease);
+}
+.film[hidden]{ display:none; }
+
+/* width/height auto + os dois max: o video se ajusta a janela mantendo a
+   propria razao, seja qual for o arquivo */
+.film__video{
+  display:block;
+  width:auto; height:auto;
+  max-width:100%; max-height:100%;
+  background:#000;
 }
 
-/* o video da hero sai de cena enquanto o filme toca. Pausar (main.js) nao
-   remove a camada dele do compositor; com dois <video> vivos, os planos de
-   overlay disputam entre si — que e a mesma raiz do problema acima. */
+.film__close{
+  position:absolute; top:12px; right:12px; z-index:1;
+  display:grid; place-items:center; width:44px; height:44px;
+  border:1px solid var(--line-2); font-size:1rem; color:var(--muted);
+  background:rgba(11,11,12,.72);
+  transition:color .25s var(--ease), border-color .25s var(--ease);
+}
+.film__close:hover,.film__close:focus-visible{ color:var(--txt); border-color:var(--muted); }
+
+/* o video da hero sai de cena enquanto o filme toca: pausar nao remove a
+   camada dele do compositor, e dois <video> vivos disputam planos de
+   overlay — a mesma raiz do item 1 */
 body.is-locked .hero__video{ visibility:hidden; }
-.modal[hidden]{ display:none; }
-.modal__frame{ width:min(1280px,100%); }
-/* Trava a caixa do filme: sem isto o elemento entra no layout com a altura
-   default do <video> e o poster aparece esmagado numa faixa.
-   A razao TEM de acompanhar o arquivo — era 16/9 por causa do story.mp4
-   (1928x1072); com o hero.webm (2208x936) a caixa e o video discordavam e
-   voltava a faixa esmagada. Trocou o video, troque aqui tambem.
-   min-height e rede de seguranca: se o video nao carregar, a caixa ainda
-   tem altura em vez de virar um risco preto. */
-.modal__frame video{
-  display:block; width:100%; height:auto;
-  aspect-ratio:var(--hero-ar);
-  min-height:200px;
-  /* desconta o padding do .modal em vez de um 8Xvh chutado: o modal
-     centraliza com place-items:center, e conteudo mais alto que o
-     container tem o TOPO cortado, sem scroll que alcance */
-  max-height:calc(100svh - (var(--gut) * 2) - 16px);
-  object-fit:contain;
-  border:1px solid var(--line); background:#000;
-}
 
-.modal__close,.lb__close{
+.lb__close{
   position:absolute; top:12px; right:12px;
   display:grid; place-items:center; width:44px; height:44px;
   border:1px solid var(--line-2); font-size:1rem; color:var(--muted);
   background:rgba(11,11,12,.6);
   transition:color .25s var(--ease), border-color .25s var(--ease);
 }
-.modal__close:hover,.lb__close:hover{ color:var(--txt); border-color:var(--muted); }
+.lb__close:hover{ color:var(--txt); border-color:var(--muted); }
 
 /* ── Lightbox ──────────────────────────────────────────── */
 
@@ -867,7 +872,7 @@ body.is-locked{ overflow:hidden; }
 /* ── Print ─────────────────────────────────────────────── */
 
 @media print{
-  .nav,.progress,.viewer__ui,.modal,.lb{ display:none !important; }
+  .nav,.progress,.viewer__ui,.film,.lb{ display:none !important; }
   body{ background:#fff; color:#111; }
   body::after{ display:none; }
   .sheet{ background:#fff; gap:8px; }

@@ -69,29 +69,45 @@
   toggle?.addEventListener('click', () => setMenu(menu.classList.contains('is-open') === false));
   menu?.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
 
-  /* ── 5. Film modal ───────────────────────────────────── */
-  const modal   = $('#filmModal');
-  const filmVid = $('#filmVideo');
+  /* ── 5. Filme (modal) ────────────────────────────────── */
+  /* Reescrito junto com o markup e o CSS, por causa do bug do vídeo
+     aparecendo atrás da hero. O que mudou de fato:
+
+     O player nasce com preload="none" no HTML, então não busca nem
+     decodifica nada até a primeira abertura. Antes, dois <video>
+     apontando pro mesmo arquivo ficavam vivos desde o carregamento da
+     página — e duas camadas de vídeo disputando planos de overlay da GPU
+     é a hipótese mais forte pro quadro escapar do container.
+     O par disso está no CSS: body.is-locked esconde o vídeo da hero
+     enquanto o filme toca. */
+  const film    = $('#film');
+  const player  = $('#filmPlayer');
   const heroVid = $('#heroLoop');
+  let armed = false;
 
   const openFilm = () => {
-    if (!modal) return;
-    modal.hidden = false;
+    if (!film || !player) return;
+    if (!armed) { player.load(); armed = true; }   /* pega os <source> do HTML */
+    film.hidden = false;
     document.body.classList.add('is-locked');
     heroVid?.pause();
-    filmVid?.play().catch(() => {});
+    player.play().catch(() => {});                 /* sem autoplay: o usuário usa os controles */
     $('#filmClose')?.focus();
   };
+
   const closeFilm = () => {
-    if (!modal) return;
-    filmVid?.pause();
-    modal.hidden = true;
+    if (!film || !player) return;
+    player.pause();
+    film.hidden = true;
     document.body.classList.remove('is-locked');
     if (!reduce) heroVid?.play().catch(() => {});
+    $('#filmOpen')?.focus();                       /* devolve o foco ao botão de origem */
   };
-  $('#playFilm')?.addEventListener('click', openFilm);
+
+  $('#filmOpen')?.addEventListener('click', openFilm);
   $('#filmClose')?.addEventListener('click', closeFilm);
-  modal?.addEventListener('click', (e) => { if (e.target === modal) closeFilm(); });
+  /* clique no fundo fecha; clique no <video> não, senão pausar fecharia */
+  film?.addEventListener('click', (e) => { if (e.target === film) closeFilm(); });
 
   /* Se o vídeo do hero não existir/não puder tocar, mostra só o poster. */
   heroVid?.addEventListener('error', () => { heroVid.style.display = 'none'; }, true);
@@ -161,7 +177,7 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (modal && !modal.hidden && e.key === 'Escape') return closeFilm();
+    if (film && !film.hidden && e.key === 'Escape') return closeFilm();
     if (!lb || lb.hidden) return;
     if (e.key === 'Escape')     closeLb();
     if (e.key === 'ArrowRight') show(index + 1);

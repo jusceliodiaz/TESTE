@@ -78,7 +78,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=86" />
+    <link rel="stylesheet" href="assets/css/style.css?v=87" />
   </head>
   <body>
     <div class="progress" aria-hidden="true">
@@ -132,7 +132,7 @@
             massello.
           </p>
           <div class="hero__actions" data-reveal>
-            <button class="btn btn--primary" id="playFilm">
+            <button class="btn btn--primary" id="filmOpen" type="button">
               <svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -1159,33 +1159,32 @@
       </nav>
     </footer>
 
-    <!-- Modal do filme com áudio -->
-    <div
-      class="modal"
-      id="filmModal"
-      role="dialog"
-      aria-modal="true"
-      aria-label="La storia della chaise"
-      hidden
-    >
-      <button class="modal__close" id="filmClose" aria-label="Chiudi">
-        ✕
-      </button>
-      <div class="modal__frame">
-        <!-- sem faixa de legendas: o .vtt que existia tinha so o cabecalho
-         WEBVTT, nenhuma legenda — abria um menu de CC vazio no player -->
-        <video
-          id="filmVideo"
-          controls
-          playsinline
-          preload="metadata"
-          poster="assets/video/hero-poster.jpg"
-        >
-          <source src="assets/video/hero.webm" type="video/webm" />
-          <source src="assets/video/hero.mp4" type="video/mp4" />
-        </video>
-      </div>
-    </div>
+<!-- Filme: modal proprio, reescrito do zero. Regras que ele segue e o
+     anterior nao seguia:
+       - filho direto de <body>, nunca dentro de <main>
+       - sem backdrop-filter (um <video> sob backdrop-filter pode virar
+         hardware overlay e escapar do z-index)
+       - fundo opaco, sem transparencia a compor
+       - SEM aspect-ratio no CSS: a proporcao vem do proprio arquivo, via
+         max-width/max-height. Trocar o video nunca mais quebra o layout.
+       - flex em vez de grid+place-items: centralizacao que nao esconde o
+         topo quando o conteudo e mais alto que a tela -->
+<div class="film" id="film" hidden>
+  <button class="film__close" id="filmClose" type="button" aria-label="Chiudi">
+    ✕
+  </button>
+  <video
+    class="film__video"
+    id="filmPlayer"
+    controls
+    playsinline
+    preload="none"
+    poster="assets/video/hero-poster.jpg"
+  >
+    <source src="assets/video/hero.webm" type="video/webm" />
+    <source src="assets/video/hero.mp4" type="video/mp4" />
+  </video>
+</div>
 
     <!-- Lightbox -->
     <div
@@ -1209,7 +1208,7 @@
       </figure>
     </div>
 
-    <script src="assets/js/main.js?v=29" defer></script>
+    <script src="assets/js/main.js?v=30" defer></script>
 
     <!-- three.js (ES modules via CDN). Troque a versão só se testar antes. -->
     <script type="importmap">
