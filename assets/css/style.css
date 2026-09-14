@@ -62,7 +62,6 @@ body{
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
   overflow-x:hidden;
-  counter-reset:plate;
 }
 
 /* film grain — keeps the flat dark from reading as plastic */
@@ -195,8 +194,21 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 /* ── Hero ──────────────────────────────────────────────── */
 
+/* A altura da hero e a razao do proprio hero.webm (2208x936 = 2.36:1), nao
+   mais 100svh. Com a caixa na razao do video, o object-fit:cover abaixo nao
+   corta nada — mesmo truque do .ar-cine/.ar-index nas chapas. Era 16:9
+   antes; num viewport inteiro, um video 2.36:1 perdia quase metade da
+   altura no recorte.
+     min-height  piso pra caber titulo + lede + botao quando a razao daria
+                 uma faixa baixa demais (no telefone daria ~165px)
+     max-height  teto pra hero nao passar da tela em monitor largo
+   Nesses dois extremos a caixa deixa de ser 2.36:1 e volta a recortar —
+   inevitavel, mas fora deles o video aparece inteiro. */
 .hero{
-  position:relative; min-height:100svh;
+  position:relative;
+  aspect-ratio:2208 / 936;
+  min-height:min(520px, 88svh);
+  max-height:100svh;
   display:flex; flex-direction:column; justify-content:flex-end;
   overflow:hidden;
   border-bottom:1px solid var(--line);
@@ -300,9 +312,10 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   pointer-events:none;
 }
 
-/* etiqueta sobre a imagem: mesma familia dos numeros de chapa do resto do
-   site, mas texto (o estagio do pipeline), nao um contador — e acende no
-   hover igual ao counter() das outras chapas */
+/* etiqueta sobre a imagem: nomeia o estagio do pipeline. Com a numeracao
+   automatica das chapas removida, ela e a .plate-pill sao o que rotula as
+   imagens no site — por isso acendem no hover, como affordance de que a
+   chapa e clicavel. */
 .fact-plate__tag{
   position:absolute; z-index:2; left:10px; bottom:8px;
   font:var(--label); font-size:.56rem; letter-spacing:.1em; text-transform:uppercase;
@@ -338,13 +351,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .sheet > .w9 { grid-column:span 9;  }
 .sheet > .w12{ grid-column:span 12; }
 
-/* a full-width text cell reads across instead of down */
-.cell--text.cell--row{ flex-direction:row; align-items:baseline; flex-wrap:wrap; gap:clamp(14px,3vw,48px); }
-.cell--row .line{ max-width:46ch; }
-.cell--row .idx{ margin:0; }
-.cell--row .line{ margin:0; }
-
-
 /* a text cell: index, one heading, one line, nothing else */
 .cell--text{
   display:flex; flex-direction:column;
@@ -359,7 +365,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    titulo do #viewer, que e w3 e alinha com o indice "01" a esquerda. */
 .cell--center{ align-items:center; text-align:center; }
 
-.cell--pad{ padding:var(--pad); }
 
 /* pipeline: e o mesmo .data.data--1 usado em qualquer bloco de chave/valor —
    zero valor bespoke de fonte/espacamento, so o posicionamento muda:
@@ -412,21 +417,12 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   width:100%; height:100%; object-fit:cover;
   transition:transform 1s var(--ease-out), filter .45s var(--ease), opacity .5s var(--ease);
 }
-/* every plate is numbered, in sequence, by the stylesheet */
-.tile::before{
-  counter-increment:plate;
-  content:counter(plate,decimal-leading-zero);
-  position:absolute; z-index:2; left:10px; top:8px;
-  font:var(--label); font-size:.58rem; letter-spacing:.1em;
-  color:rgba(255,255,255,.62);
-  text-shadow:0 1px 4px rgba(0,0,0,.7);
-  font-variant-numeric:tabular-nums;
-  transition:color .3s var(--ease);
-}
-/* chapa sem marca: nada de texto sobre a imagem. content:none impede a
-   criacao do pseudo-elemento, entao o contador tambem nao incrementa e a
-   numeracao das chapas seguintes nao pula. */
-.tile--bare::before{ content:none; }
+/* As chapas eram numeradas em sequencia por CSS (counter(plate) num
+   .tile::before). Removido: quem rotula as imagens agora sao as etiquetas
+   de texto (.plate-pill / .fact-plate__tag), que dizem O QUE a imagem e —
+   um numero de ordem em cima delas era so ruido a mais sobre a foto.
+   Saiu junto o counter-reset:plate do body e a classe .tile--bare, que
+   existia so pra tirar uma chapa da contagem sem furar a sequencia. */
 
 /* chapa tecnica: enquadra em vez de recortar. Os dois screenshots largos
    tem conteudo de borda a borda — um recorte quadrado comeria 37% deles. */
@@ -435,7 +431,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .tile--fit:hover img,.tile--fit:focus-visible img{ transform:none; filter:brightness(1.06); }
 
 .tile:hover img,.tile:focus-visible img{ transform:scale(1.03); filter:brightness(1.07); }
-.tile:hover::before,.tile:focus-visible::before{ color:var(--accent); }
 
 /* chapa vazia: reserva o lugar de um render que ainda nao existe. Diagonais
    avisam "vazio de proposito" em vez de deixar um retangulo cinza mudo;
@@ -555,7 +550,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   margin:0; padding:0;
 }
 .data--1{ grid-template-columns:1fr; align-content:start; }
-.data--4{ grid-template-columns:repeat(4,1fr); }
 .data > div,.data > li{
   background:var(--bg); padding:var(--pad);
   list-style:none;
@@ -646,7 +640,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .btn--primary{ background:var(--txt); color:#0b0b0c; border-color:var(--txt); }
 .btn--primary:hover{ background:var(--accent); border-color:var(--accent); }
-.btn--ghost:hover{ border-color:var(--accent); color:var(--accent); }
 .btn__meta{ color:currentColor; opacity:.5; }
 
 .chip{
@@ -660,7 +653,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .chip:hover{ color:var(--txt); border-color:var(--muted); }
 .chip:disabled{ opacity:.45; cursor:default; }
-.chip__meta{ opacity:.55; margin-left:.45em; }
 .chip[aria-pressed="true"]{ color:#0b0b0c; background:var(--accent); border-color:var(--accent); }
 
 /* ── Modal (film) ──────────────────────────────────────── */
@@ -788,14 +780,11 @@ body.is-locked{ overflow:hidden; }
   /* e a do concept segura as proporcoes: com repeat(3,1fr) as tres ficariam
      da mesma largura, e a 16/9 sairia mais alta que as duas vizinhas */
   .strip--concept{ grid-template-columns:297fr 297fr 224fr; }
-  .sheet > .w6,.sheet > .w9,.sheet > .w12,
-    .data--4{ grid-template-columns:repeat(2,1fr); }
 }
 
 @media (max-width:640px){
   .sheet{ grid-template-columns:repeat(2,1fr); }
   .sheet > *{ grid-column:span 2; }
-  .sheet > .half-sm{ grid-column:span 1; }
   .strip{ grid-template-columns:repeat(2,1fr); }
   /* no telefone a faixa de duas empilha: 2.36:1 em meia tela viraria uma
      fresta de ~80px, onde nao se le nem a cena nem a diferenca de luz */
@@ -803,10 +792,6 @@ body.is-locked{ overflow:hidden; }
   /* idem pro concept — e ali o contact sheet de seis quadros do concept2
      seria ilegivel a um terco da largura */
   .strip--concept{ grid-template-columns:1fr; }
-    .cell--text.cell--row{ flex-direction:column; align-items:flex-start; gap:.5rem; }
-  .cell--row .line{ margin-top:.2rem; }
-  .data--4{ grid-template-columns:1fr; }
-    .viewer{ aspect-ratio:4/5; }
   .viewer__ui{ left:10px; right:10px; bottom:10px; width:auto; }
 
   .nav__toggle{ display:block; }
@@ -843,7 +828,7 @@ body.is-locked{ overflow:hidden; }
   body{ background:#fff; color:#111; }
   body::after{ display:none; }
   .sheet{ background:#fff; gap:8px; }
-  .cell,.tile,.data > div,.data > li,.figure{ background:#fff; }
+  .cell,.tile,.data > div,.data > li{ background:#fff; }
   .sheet,.hero{ border-color:#ddd; page-break-inside:avoid; }
   .line,.data dd{ color:#222; }
 }
