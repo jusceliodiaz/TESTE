@@ -677,14 +677,27 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 /* ── Modal (film) ──────────────────────────────────────── */
 
+/* SEM backdrop-filter aqui, de proposito — e a unica diferenca que sobrou
+   entre este modal e o .lb, que usa a mesma receita e funciona:
+       .lb     backdrop-filter + <img>    -> ok
+       .modal  backdrop-filter + <video>  -> video ia parar atras da hero
+   Um <video> dentro de um elemento com backdrop-filter pode ser promovido
+   a hardware overlay: um plano composto pela GPU FORA do fluxo da pagina,
+   que ignora z-index e o recorte do container. Por isso o quadro escapava
+   da caixa (que media certo o tempo todo) e aparecia cortado atras da hero.
+   O fundo ja tem 92% de opacidade — o blur quase nao aparecia mesmo. */
 .modal{
   position:fixed; inset:0; z-index:200; display:grid; place-items:center;
   overflow:auto;
-  background:rgba(6,6,7,.92);
-  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  background:rgba(6,6,7,.97);
   padding:var(--gut);
   animation:fade .35s var(--ease);
 }
+
+/* o video da hero sai de cena enquanto o filme toca. Pausar (main.js) nao
+   remove a camada dele do compositor; com dois <video> vivos, os planos de
+   overlay disputam entre si — que e a mesma raiz do problema acima. */
+body.is-locked .hero__video{ visibility:hidden; }
 .modal[hidden]{ display:none; }
 .modal__frame{ width:min(1280px,100%); }
 /* Trava a caixa do filme: sem isto o elemento entra no layout com a altura
