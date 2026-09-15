@@ -109,16 +109,18 @@
     <main id="top" tabindex="-1">
       <!-- ═══════════════ HERO ═══════════════ -->
       <section class="hero" id="hero">
-        <!-- LOOP do hero: H.264 1472x624, ~910 kbps, 3.6 MB, sem audio (a fonte
-         nao tem faixa nenhuma). NAO e mais o mesmo arquivo do modal — o
-         filme tem o seu, em qualidade maior (film.mp4 la embaixo).
+        <!-- LOOP do hero: H.264 1472x624, ~910 kbps, 3.6 MB, sem audio (nenhuma
+         das fontes tem faixa). Encodado de assets/video/hero_new.webm.
+         NAO e o mesmo arquivo do modal — o filme tem o seu (film.mp4), mais
+         pesado e em resolucao nativa.
 
-         Era VP9 2208x936 a ~4 Mbps e travava, por dois motivos somados:
-         streamar 4 Mbps sustentados, e VP9 nessa resolucao cair em decode
-         por SOFTWARE em boa parte das maquinas — ainda disputando CPU/GPU
-         com os dois contextos WebGL do visualizador. H.264 tem decode por
-         hardware em praticamente tudo, e aqui atras do scrim a perda de
-         detalhe nao aparece. O main.js ainda pausa este video fora da tela. -->
+         Servir a fonte VP9 direto (2208x936, ~4 Mbps) travava, por dois
+         motivos somados: streamar 4 Mbps sustentados, e VP9 nessa resolucao
+         cair em decode por SOFTWARE em boa parte das maquinas — ainda
+         disputando CPU/GPU com os dois contextos WebGL do visualizador.
+         H.264 tem decode por hardware em praticamente tudo, e aqui atras do
+         scrim a perda de detalhe nao aparece.
+         O main.js tambem pausa este video quando ele sai da tela. -->
         <video
           class="hero__video"
           id="heroLoop"
@@ -1251,13 +1253,17 @@
   <button class="film__close" id="filmClose" type="button" aria-label="Chiudi">
     ✕
   </button>
-  <!-- FILME: arquivo proprio, 1920x814 a ~2.8 Mbps (11 MB) — o dobro da
-       resolucao do loop do hero e sem o denoise pesado, porque aqui o video
-       e o conteudo, nao o fundo. Antes os dois compartilhavam um arquivo so
-       ("um download serve os dois"); a troca e deliberada: aquilo obrigava o
-       hero a carregar qualidade de filme em autoplay, que era metade do
-       engasgo. O preload="none" e o que mantem o custo em zero — nada daqui
-       e baixado ate alguem clicar em "Guarda il film". -->
+  <!-- FILME: arquivo proprio, encodado do master assets/video/hero4.mp4
+       (H.264 10 Mbps, 39.8 MB). Sai em 2208x936 — resolucao NATIVA, sem
+       reescala — a ~3.2 Mbps (12.6 MB), com SSIM 0.98 contra o master.
+       Denoise leve aqui, nao o pesado do loop: neste player o video e o
+       conteudo, nao o fundo.
+
+       Os dois já compartilharam um arquivo ("um download serve os dois"); a
+       separacao e deliberada, porque aquilo obrigava o hero a carregar
+       qualidade de filme em autoplay — metade do engasgo. O preload="none"
+       e o que mantem o custo disto em zero: nada e baixado ate alguem
+       clicar em "Guarda il film". -->
   <video
     class="film__video"
     id="filmPlayer"
