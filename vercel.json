@@ -1,0 +1,33 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "//": "Sem isto o Vercel serve estatico nao-hasheado com must-revalidate: cada carregamento paga uma ida ao servidor so pra ouvir 304, e no video isso atrasa o primeiro quadro. Os arquivos tem nome fixo, entao a invalidacao aqui e trocar o arquivo e redeployar.",
+      "source": "/assets/video/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "//": "Imagens: mesmo raciocinio. Trocar um render exige redeploy, que e o fluxo real deste repo.",
+      "source": "/(images|assets/img)/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "//": "CSS/JS carregam com ?v=N no index.html — o proprio querystring e a invalidacao, entao podem ser immutable tambem.",
+      "source": "/assets/(css|js)/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "//": "O HTML NAO pode ser immutable: e ele que carrega os ?v=N novos. Revalida sempre.",
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ]
+}

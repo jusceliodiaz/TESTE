@@ -119,6 +119,8 @@
      apontando pro mesmo arquivo ficavam vivos desde o carregamento da
      página — e duas camadas de vídeo disputando planos de overlay da GPU
      é a hipótese mais forte pro quadro escapar do container.
+     Hoje nem são o mesmo arquivo: o hero carrega hero.mp4 (leve, pro loop)
+     e o filme carrega film.mp4 (1920px, qualidade de conteúdo).
      O par disso está no CSS: body.is-locked esconde o vídeo da hero
      enquanto o filme toca. */
   const film    = $('#film');
@@ -159,6 +161,25 @@
   /* Se o vídeo do hero não existir/não puder tocar, mostra só o poster. */
   heroVid?.addEventListener('error', () => { heroVid.style.display = 'none'; }, true);
   if (reduce) heroVid?.pause();
+
+  /* O loop do hero decodificava a página inteira, inclusive enquanto o
+     visualizador 3D está na tela com DOIS contextos WebGL e GTAO por cima —
+     um decoder de vídeo e dois renderers disputando a mesma GPU/CPU é metade
+     do engasgo. Fora da tela não há o que assistir, então pausa.
+     Só reencosta o play se o usuário não pediu menos movimento e o filme não
+     está aberto (o modal esconde o vídeo do hero de propósito — ver
+     body.is-locked no CSS). */
+  if (heroVid && !reduce && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          if (!document.body.classList.contains('is-locked')) heroVid.play().catch(() => {});
+        } else {
+          heroVid.pause();
+        }
+      });
+    }, { threshold: 0 }).observe(heroVid);
+  }
 
   /* ── 6. Lightbox ─────────────────────────────────────── */
   const lb    = $('#lb');

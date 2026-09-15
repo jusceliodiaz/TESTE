@@ -35,11 +35,13 @@
   --pad-sm:    clamp(11px, .9vw, 15px);
   --r:         0px;       /* nothing is rounded here */
 
-  /* Razao do assets/video/hero.webm (2208x936). Usada em DOIS lugares — a
-     caixa da .hero e a do video no modal — e e por isso que mora aqui: o
-     valor tinha ficado 16/9 no modal quando o video trocou, e o filme abria
-     esmagado numa faixa. Trocou o video, troque so esta linha. */
-  --hero-ar:   2208 / 936;
+  /* Razao do assets/video/hero.mp4 (1472x624). E a MESMA de antes: 2208x936
+     e 1472x624 sao os dois 92:39, entao o reencode nao mexeu aqui.
+     Usada em DOIS lugares — a caixa da .hero e a do video no modal — e e por
+     isso que mora aqui: o valor tinha ficado 16/9 no modal quando o video
+     trocou, e o filme abria esmagado numa faixa. Trocou o video, troque so
+     esta linha. */
+  --hero-ar:   1472 / 624;
 
   --ease:      cubic-bezier(.22,.61,.36,1);
   --ease-out:  cubic-bezier(.16,1,.3,1);

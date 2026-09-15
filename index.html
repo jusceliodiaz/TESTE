@@ -78,7 +78,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=92" />
+    <link rel="stylesheet" href="assets/css/style.css?v=93" />
   </head>
   <body>
     <a class="skip" href="#top">Vai al contenuto</a>
@@ -109,9 +109,16 @@
     <main id="top" tabindex="-1">
       <!-- ═══════════════ HERO ═══════════════ -->
       <section class="hero" id="hero">
-        <!-- webm (VP9, 2208px) primeiro; o mp4 e o fallback de Safari/iOS, que
-         so ganhou VP9 tarde. Mesmo arquivo do modal: quem assistir ao filme
-         reaproveita o que ja esta em cache. -->
+        <!-- LOOP do hero: H.264 1472x624, ~910 kbps, 3.6 MB, sem audio (a fonte
+         nao tem faixa nenhuma). NAO e mais o mesmo arquivo do modal — o
+         filme tem o seu, em qualidade maior (film.mp4 la embaixo).
+
+         Era VP9 2208x936 a ~4 Mbps e travava, por dois motivos somados:
+         streamar 4 Mbps sustentados, e VP9 nessa resolucao cair em decode
+         por SOFTWARE em boa parte das maquinas — ainda disputando CPU/GPU
+         com os dois contextos WebGL do visualizador. H.264 tem decode por
+         hardware em praticamente tudo, e aqui atras do scrim a perda de
+         detalhe nao aparece. O main.js ainda pausa este video fora da tela. -->
         <video
           class="hero__video"
           id="heroLoop"
@@ -122,7 +129,6 @@
           preload="metadata"
           poster="assets/video/hero-poster.jpg"
         >
-          <source src="assets/video/hero.webm" type="video/webm" />
           <source src="assets/video/hero.mp4" type="video/mp4" />
         </video>
         <div class="hero__scrim"></div>
@@ -1245,6 +1251,13 @@
   <button class="film__close" id="filmClose" type="button" aria-label="Chiudi">
     ✕
   </button>
+  <!-- FILME: arquivo proprio, 1920x814 a ~2.8 Mbps (11 MB) — o dobro da
+       resolucao do loop do hero e sem o denoise pesado, porque aqui o video
+       e o conteudo, nao o fundo. Antes os dois compartilhavam um arquivo so
+       ("um download serve os dois"); a troca e deliberada: aquilo obrigava o
+       hero a carregar qualidade de filme em autoplay, que era metade do
+       engasgo. O preload="none" e o que mantem o custo em zero — nada daqui
+       e baixado ate alguem clicar em "Guarda il film". -->
   <video
     class="film__video"
     id="filmPlayer"
@@ -1253,8 +1266,7 @@
     preload="none"
     poster="assets/video/hero-poster.jpg"
   >
-    <source src="assets/video/hero.webm" type="video/webm" />
-    <source src="assets/video/hero.mp4" type="video/mp4" />
+    <source src="assets/video/film.mp4" type="video/mp4" />
   </video>
 </div>
 
@@ -1282,7 +1294,7 @@
       </figure>
     </div>
 
-    <script src="assets/js/main.js?v=34" defer></script>
+    <script src="assets/js/main.js?v=36" defer></script>
 
     <!-- three.js (ES modules via CDN). Troque a versão só se testar antes. -->
     <script type="importmap">
