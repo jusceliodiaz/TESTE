@@ -68,7 +68,7 @@ const countTris = (obj) => {
 };
 
 const reason = (err) => {
-  const m = String(err?.message || err || 'unknown').replace(/\s+/g, ' ');
+  const m = String(err?.message || err || 'sconosciuto').replace(/\s+/g, ' ');
   return m.length > 40 ? m.slice(0, 40) + '…' : m;
 };
 
@@ -260,7 +260,7 @@ const createPane = ({ host: hostId, status: statusId, url, label }) => {
       root.add(proxy);
       prepare(proxy);
       frameObject(proxy);
-      say(`Placeholder — ${reason(err)}`);
+      say(`Segnaposto — ${reason(err)}`);
       return;
     }
 
@@ -269,7 +269,7 @@ const createPane = ({ host: hostId, status: statusId, url, label }) => {
     root.add(gltf.scene);
     prepare(gltf.scene, { clay: bare });
     frameObject(gltf.scene);
-    say(`${label} · ${countTris(gltf.scene).toLocaleString('it-IT')} tris`);
+    say(`${label} · ${countTris(gltf.scene).toLocaleString('it-IT')} triangoli`);
   };
 
   return { host, camera, controls, scene, renderer, setWire, render, resize, load };

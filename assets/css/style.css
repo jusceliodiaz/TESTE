@@ -13,6 +13,10 @@
   --bg-3:      #17171c;
   --line:      #24242a;
   --line-2:    #35353d;
+  /* fio de CONTROLE: 3.3:1 contra --bg. --line-2 tem 1.6:1, abaixo do minimo
+     de 3:1 que a WCAG 1.4.11 pede pra borda que DEFINE um botao. Decoracao
+     continua em --line-2; tudo que e clicavel usa este. */
+  --line-3:    #64646e;
 
   /* ink */
   --txt:       #f1eee9;
@@ -182,7 +186,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .nav__link:hover::after{ transform:scaleX(.35); }
 .nav__link.is-active::after{ transform:scaleX(1); }
 .nav__link--cta{
-  border:1px solid var(--line-2); padding:.55em 1em; color:var(--txt);
+  border:1px solid var(--line-3); padding:.55em 1em; color:var(--txt);
   transition:background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
 }
 .nav__link--cta::after{ display:none; }
@@ -260,8 +264,8 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .viewer__ui{
   display:flex; flex-wrap:wrap; align-items:stretch;
   gap:var(--hair);
-  background:var(--line-2);
-  border:1px solid var(--line-2);
+  background:var(--line-3);
+  border:1px solid var(--line-3);
   width:max-content; max-width:100%;
 }
 .hero__actions > .btn,
@@ -278,8 +282,19 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .fact-plate{ display:flex; flex-direction:column; background:var(--bg); }
 
 .fact-plate__head{
-  display:flex; flex-direction:row; align-items:center; gap:1rem;
+  display:flex; flex-direction:column; align-items:flex-start; gap:.85rem;
   background:var(--bg-2); padding:var(--pad);
+}
+/* O icone em LINHA na frente do texto (a decisao original) so cabe quando a
+   coluna tem largura. Na .strip--6 cada ficha fica com ~240px; tirando o
+   --pad dos dois lados, o icone de 64px e o gap, sobravam 92-113px de medida
+   pro titulo entre 1000px e 1500px de viewport — 3 linhas de ~13 caracteres,
+   e "Modellazione · Base mesh realizzata in 3dsMax" estourava mesmo assim.
+   Empilhado, o titulo recebe a coluna inteira (~195px) e as seis fecham em
+   2 linhas. Acima de 1500px ha largura de sobra e a fileira volta a ser
+   horizontal, que e como ela foi desenhada. */
+@media (min-width:1500px){
+  .fact-plate__head{ flex-direction:row; align-items:center; gap:1rem; }
 }
 
 /* icone: caixa solida 64px, na frente do texto (nao empilhado embaixo) */
@@ -292,7 +307,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .fact-plate__icon svg{ color:#0b0b0c; }
 .fact-plate__icon:hover{ filter:brightness(1.1); }
-.fact-plate__icon-label{ font:var(--label); font-size:.5rem; letter-spacing:.06em; color:#0b0b0c; text-transform:uppercase; }
+.fact-plate__icon-label{ font:var(--label); font-size:10px; letter-spacing:.06em; color:#0b0b0c; text-transform:uppercase; }
 
 /* variante logo: mesma caixa preenchida, sem link — so a marca do software,
    nao e uma acao entao nao e <a>/<button> */
@@ -301,18 +316,25 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 .fact-plate__copy{ flex:1 1 auto; min-width:0; margin:0; }
 .fact-plate__eyebrow{
-  margin:0; font:var(--label); font-size:.6rem; letter-spacing:.15em;
+  margin:0; font:var(--label); font-size:11.5px; letter-spacing:.15em;
   text-transform:uppercase; color:var(--muted);
 }
 .fact-plate__eyebrow-id{ color:var(--accent); font-variant-numeric:tabular-nums; }
-/* min-height reserva sempre 2 linhas — titulos mais curtos (ex: "UV Mapping
-   done in Blender") nao deixam o cabecalho mais baixo que o do vizinho mais
-   longo; sem isso o grid da .strip--6 esticava o .fact-plate mais baixo pra
-   bater com o mais alto, e a sobra virava um vao preto embaixo da imagem. */
+/* min-height reserva sempre 3 linhas — titulos mais curtos (ex: "Mappatura UV
+   realizzata in Blender") nao deixam o cabecalho mais baixo que o do vizinho
+   mais longo; sem isso o grid da .strip--6 esticava o .fact-plate mais baixo
+   pra bater com o mais alto, e a sobra virava um vao preto embaixo da imagem.
+
+   O clamp era de 2 linhas e cortava conteudo de verdade enquanto o cabecalho
+   era horizontal: "Modellazione · Base mesh realizzata in 3dsMax" saia como
+   "Base mesh…", escondendo o software — que e justamente o que a ficha
+   existe pra dizer. Com o cabecalho empilhado (regra acima) a medida dobrou
+   e 2 linhas voltam a bastar; 3 ficam como folga pra um texto futuro. */
 .fact-plate__title{
-  margin:.4rem 0 0; font-size:.82rem; line-height:1.35; color:var(--txt);
+  margin:.4rem 0 0; font-size:.8rem; line-height:1.35; color:var(--txt);
   min-height:2.7em;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+  text-wrap:pretty;
 }
 
 /* mascara embaixo da imagem: escurece da base pro centro. Com a chapa ja na
@@ -331,7 +353,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    chapa e clicavel. */
 .fact-plate__tag{
   position:absolute; z-index:2; left:10px; bottom:8px;
-  font:var(--label); font-size:.56rem; letter-spacing:.1em; text-transform:uppercase;
+  font:var(--label); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
   color:rgba(241,238,233,.88);
   text-shadow:0 1px 4px rgba(0,0,0,.7);
   transition:color .3s var(--ease);
@@ -462,7 +484,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .tile--pending::after{
   content:"In arrivo";
-  font:var(--label); font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
+  font:var(--label); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
   color:var(--dim);
 }
 
@@ -484,7 +506,10 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   position:absolute; inset:0;
   width:100%; height:100%; object-fit:cover;
   opacity:0;
-  transition:opacity .9s var(--ease), transform 1s var(--ease-out), filter .45s var(--ease);
+  /* .9s de fundido custava 18% de um ciclo de 5s (o passo caiu de 10s pra 5s
+     em SHOT_MS): a chapa passava tempo demais em meio-caminho entre os dois
+     quadros. .55s deixa cada quadro assentado antes do proximo. */
+  transition:opacity .55s var(--ease), transform 1s var(--ease-out), filter .45s var(--ease);
 }
 .ishot__img.is-active{ opacity:1; }
 
@@ -576,7 +601,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 }
 .data dt,.data b,.data h3{
   display:block; margin:0;
-  font:var(--label); font-size:.6rem; letter-spacing:.15em;
+  font:var(--label); font-size:11.5px; letter-spacing:.15em;
   text-transform:uppercase; color:var(--muted);
 }
 .data dd,.data p{
@@ -640,7 +665,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .viewer__hint,
 .viewer__status{
   position:absolute; margin:0;
-  font:var(--label); font-size:.6rem; letter-spacing:.14em;
+  font:var(--label); font-size:11.5px; letter-spacing:.14em;
   text-transform:uppercase; color:var(--muted);
 }
 .viewer__hint{ bottom:14px; left:50%; transform:translateX(-50%); }
@@ -654,7 +679,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
   min-height:44px; padding:.75em 1.3em;
-  border:1px solid var(--line-2);
+  border:1px solid var(--line-3);
   font:var(--label); letter-spacing:.13em; text-transform:uppercase;
   transition:background .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
 }
@@ -664,8 +689,8 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 .chip{
   display:inline-flex; align-items:center; min-height:34px;
-  padding:.4em .85em; border:1px solid var(--line-2);
-  font:var(--label); font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
+  padding:.45em .85em; border:1px solid var(--line-3);
+  font:var(--label); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase;
   color:var(--muted); white-space:nowrap;
   background:rgba(11,11,12,.62);
   -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
@@ -713,7 +738,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .film__close{
   position:absolute; top:12px; right:12px; z-index:1;
   display:grid; place-items:center; width:44px; height:44px;
-  border:1px solid var(--line-2); font-size:1rem; color:var(--muted);
+  border:1px solid var(--line-3); font-size:1rem; color:var(--muted);
   background:rgba(11,11,12,.72);
   transition:color .25s var(--ease), border-color .25s var(--ease);
 }
@@ -727,7 +752,7 @@ body.is-locked .hero__video{ visibility:hidden; }
 .lb__close{
   position:absolute; top:12px; right:12px;
   display:grid; place-items:center; width:44px; height:44px;
-  border:1px solid var(--line-2); font-size:1rem; color:var(--muted);
+  border:1px solid var(--line-3); font-size:1rem; color:var(--muted);
   background:rgba(11,11,12,.6);
   transition:color .25s var(--ease), border-color .25s var(--ease);
 }
@@ -744,7 +769,16 @@ body.is-locked .hero__video{ visibility:hidden; }
 }
 .lb[hidden]{ display:none; }
 .lb__fig{ margin:0; max-width:100%; max-height:100%; }
-.lb__fig img{ max-height:82vh; width:auto; margin:0 auto; border:1px solid var(--line); }
+.lb__fig img{
+  max-height:82vh; width:auto; margin:0 auto; border:1px solid var(--line);
+  /* o JS reinicia esta animacao a cada troca de quadro: sem ela a imagem
+     seguinte aparece de estalo, e numa galeria de seis vistas quase iguais
+     nao se percebe que algo mudou */
+  animation:lbin .3s var(--ease-out) both;
+}
+@keyframes lbin{ from{ opacity:0 } to{ opacity:1 } }
+/* galeria de uma imagem so: as setas nao teriam pra onde ir */
+.lb.is-single .lb__nav{ display:none; }
 .lb__fig figcaption{
   display:flex; justify-content:space-between; gap:1rem; margin-top:.85rem;
   font-family:var(--mono); font-size:.7rem; color:var(--muted); letter-spacing:.01em;
@@ -757,7 +791,7 @@ body.is-locked .hero__video{ visibility:hidden; }
   border:1px solid transparent;
   transition:color .25s var(--ease), border-color .25s var(--ease), background .25s var(--ease);
 }
-.lb__nav:hover{ color:var(--txt); border-color:var(--line-2); background:rgba(11,11,12,.6); }
+.lb__nav:hover{ color:var(--txt); border-color:var(--line-3); background:rgba(11,11,12,.6); }
 .lb__nav--prev{ left:10px; }
 .lb__nav--next{ right:10px; }
 
@@ -790,6 +824,7 @@ body.is-locked{ overflow:hidden; }
 .foot__link--top:hover,.foot__link--top:focus-visible{ background:var(--accent); color:#0b0b0c; }
 
 @media (max-width:640px){
+  .foot__colophon{ flex-direction:column; align-items:flex-start; }
   /* 5 células numa tela estreita dariam ~70px cada, e "Postproduzione"
      quebraria em três linhas. Duas colunas, com o "Torna su" ocupando a
      fileira inteira — é o atalho que mais se usa no fim da página. */
@@ -815,6 +850,109 @@ body.is-locked{ overflow:hidden; }
 [data-reveal].is-in > :nth-child(6){ animation-delay:.25s }
 [data-reveal].is-in > :nth-child(7){ animation-delay:.30s }
 @keyframes plate{ from{ opacity:0; transform:translateY(10px) } to{ opacity:1; transform:none } }
+
+/* ── Skip link ─────────────────────────────────────────── */
+
+/* A folha e uma sequencia longa de chapas: sem isto, chegar ao conteudo pelo
+   teclado custa passar por todo o menu em cada carregamento. Fica escondido
+   ate receber foco. */
+.skip{
+  position:fixed; top:8px; left:8px; z-index:400;
+  padding:.7em 1.1em;
+  background:var(--accent); color:#0b0b0c;
+  font:var(--label); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase;
+  transform:translateY(-200%);
+  transition:transform .2s var(--ease);
+}
+.skip:focus{ transform:none; }
+
+/* ── Band: o rotulo de uma fileira de chapas ───────────── */
+
+/* Cinco fileiras de seis imagens quase identicas seguiam-se sem nada que
+   dissesse o que mudava entre elas (clay -> render -> varianti -> pelle ->
+   lino). A band e a legenda dessa fileira: nome a esquerda, o que a fileira
+   mostra a direita, na mesma altura de linha. Nao e um .h2 — os dois titulos
+   de secao (Modellazione / Interni) continuam sendo o degrau acima. */
+.band{
+  display:flex; align-items:baseline; justify-content:space-between;
+  flex-wrap:wrap; gap:.35rem 1.5rem;
+  background:var(--bg);
+  padding:calc(var(--pad-sm) + 2px) var(--pad);
+}
+.band__name{
+  margin:0;
+  font:var(--label); font-size:12px; font-weight:500;
+  letter-spacing:.17em; text-transform:uppercase; color:var(--txt);
+}
+.band__note{
+  margin:0;
+  font:var(--label); font-size:11px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--dim);
+}
+
+/* ── Hero: eyebrow e indicador de rolagem ──────────────── */
+
+/* A pagina inteira nao dizia de quem era o trabalho fora do <title>. O
+   eyebrow poe a autoria antes do titulo, que e onde o olho ja esta. */
+.hero__eyebrow{
+  margin:0;
+  font:var(--label); font-size:11.5px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--accent);
+}
+
+/* a hero ocupa quase a tela toda e termina num corte seco; o indicador diz
+   que ha folha embaixo. Canto oposto aos .hero__actions pra nao disputar. */
+.hero__cue{
+  position:absolute; right:var(--gut); bottom:clamp(26px,4vh,44px); z-index:2;
+  display:flex; flex-direction:column; align-items:flex-end; gap:.55rem;
+  font:var(--label); font-size:11px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--dim);
+  pointer-events:none;
+}
+.hero__cue::after{
+  content:""; width:1px; height:34px;
+  background:linear-gradient(to bottom, var(--dim), transparent);
+  transform-origin:50% 0;
+  animation:cue 2.4s var(--ease) infinite;
+}
+@keyframes cue{
+  0%,100%{ transform:scaleY(.45); opacity:.35 }
+  50%    { transform:scaleY(1);   opacity:1   }
+}
+@media (max-width:640px){ .hero__cue{ display:none; } }
+
+/* ── Tile: affordance de "isto abre" ───────────────────── */
+
+/* O unico sinal de que uma chapa e clicavel era um zoom de 3% no hover — nas
+   chapas .tile--fit (object-fit:contain) nem isso, porque ali o zoom esta
+   desligado. Um fio interno de acento no hover/foco da a mesma resposta em
+   todas. Scoped a [data-full]: e exatamente o seletor que a lightbox usa,
+   entao o fio so acende no que de fato abre. z-index acima da pill (2) e
+   pointer-events:none pro clique seguir pro botao debaixo. */
+.tile[data-full]::before{
+  content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
+  box-shadow:inset 0 0 0 1px transparent;
+  transition:box-shadow .3s var(--ease);
+}
+.tile[data-full]:hover::before,
+.tile[data-full]:focus-visible::before,
+.tile[data-full]:focus-within::before{
+  box-shadow:inset 0 0 0 1px rgba(213,167,108,.6);
+}
+
+/* ── Colophon ──────────────────────────────────────────── */
+
+/* Fileira propria abaixo da navegacao do rodape, no mesmo fio de 1px: o nome
+   e a disciplina fechavam a pagina em lugar nenhum antes. */
+.foot__colophon{
+  display:flex; align-items:baseline; justify-content:space-between;
+  flex-wrap:wrap; gap:.4rem 1.5rem;
+  margin-top:var(--hair);
+  background:var(--bg-2); padding:var(--pad-sm) var(--pad);
+  font:var(--label); font-size:11px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--dim);
+}
+.foot__colophon b{ font-weight:500; color:var(--body); }
 
 /* ── Responsive: remap the spans, keep the grid ────────── */
 

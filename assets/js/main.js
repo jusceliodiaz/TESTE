@@ -10,6 +10,24 @@
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ── 0. Foco dentro de um diálogo ──────────────────────
+     Os dois overlays (filme e lightbox) se declaram aria-modal, mas o Tab
+     saía deles e ia percorrer a folha inteira ATRÁS do overlay — teclado e
+     leitor de tela ficavam num lugar que o olho não alcança. Um par de
+     ciclagem nas pontas resolve; o resto do foco continua nativo.
+     O par disso é devolver o foco a quem abriu: sem isso, fechar o overlay
+     joga o cursor de volta pro <body> e a navegação recomeça do topo. */
+  const FOCUSABLE = 'a[href], button:not([disabled]), video[controls], [tabindex]:not([tabindex="-1"])';
+
+  const trapIn = (root) => (e) => {
+    if (e.key !== 'Tab') return;
+    const f = $$(FOCUSABLE, root).filter(el => el.offsetWidth || el.offsetHeight);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
+
   /* ── 1. Scroll progress + nav solid ───────────────────── */
   const bar = $('#progressBar');
   const nav = $('#nav');
@@ -69,6 +87,29 @@
   toggle?.addEventListener('click', () => setMenu(menu.classList.contains('is-open') === false));
   menu?.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
 
+  /* O painel cobria a tela inteira sem nenhuma saída além do próprio botão:
+     Escape e um toque fora eram os dois gestos que todo mundo tenta primeiro
+     e nenhum dos dois fazia nada. Escape devolve o foco ao botão — quem
+     abriu pelo teclado não fica com o cursor dentro de um painel invisível. */
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.classList.contains('is-open')) {
+      setMenu(false);
+      toggle?.focus();
+    }
+  });
+  /* Fase de CAPTURA, e engolindo o evento: o painel cobre so o topo da tela,
+     entao o toque que o fecha cai em cima de uma chapa — e sem o
+     stopPropagation ele fechava o menu E abria a lightbox no mesmo gesto
+     (o handler da lightbox e delegado no document, na fase de bolha).
+     O primeiro toque so dispensa; o segundo e que age. */
+  document.addEventListener('click', (e) => {
+    if (!menu?.classList.contains('is-open')) return;
+    if (e.target.closest('#navMenu') || e.target.closest('#navToggle')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setMenu(false);
+  }, true);
+
   /* ── 5. Filme (modal) ────────────────────────────────── */
   /* Reescrito junto com o markup e o CSS, por causa do bug do vídeo
      aparecendo atrás da hero. O que mudou de fato:
@@ -84,6 +125,7 @@
   const player  = $('#filmPlayer');
   const heroVid = $('#heroLoop');
   let armed = false;
+  let filmOpener = null;
 
   const openFilm = () => {
     if (!film || !player) return;
@@ -92,6 +134,7 @@
     document.body.classList.add('is-locked');
     heroVid?.pause();
     player.play().catch(() => {});                 /* sem autoplay: o usuário usa os controles */
+    filmOpener = document.activeElement;
     $('#filmClose')?.focus();
   };
 
@@ -101,13 +144,17 @@
     film.hidden = true;
     document.body.classList.remove('is-locked');
     if (!reduce) heroVid?.play().catch(() => {});
-    $('#filmOpen')?.focus();                       /* devolve o foco ao botão de origem */
+    /* volta pra quem abriu, não pro botão fixo: o filme pode ser aberto de
+       mais de um lugar no futuro e o foco tem que seguir o gesto */
+    (filmOpener || $('#filmOpen'))?.focus();
+    filmOpener = null;
   };
 
   $('#filmOpen')?.addEventListener('click', openFilm);
   $('#filmClose')?.addEventListener('click', closeFilm);
   /* clique no fundo fecha; clique no <video> não, senão pausar fecharia */
   film?.addEventListener('click', (e) => { if (e.target === film) closeFilm(); });
+  film?.addEventListener('keydown', trapIn(film));
 
   /* Se o vídeo do hero não existir/não puder tocar, mostra só o poster. */
   heroVid?.addEventListener('error', () => { heroVid.style.display = 'none'; }, true);
@@ -120,6 +167,7 @@
   const lbNum = $('#lbCount');
   let group = [];
   let index = 0;
+  let lbOpener = null;
 
   const collect = (tile) => {
     const scope = tile.closest('[data-gallery]');
@@ -138,20 +186,44 @@
     lbImg.alt = (t.querySelector('img.is-active') || t.querySelector('img'))?.alt || '';
     lbCap.textContent = t.dataset.caption || '';
     lbNum.textContent = `${index + 1} / ${group.length}`;
+
+    /* reinicia a animação de entrada: trocar o src não reinicia keyframes
+       sozinho, e numa galeria de seis vistas quase iguais a troca seca não
+       se percebe — o fade é o que diz "mudou de quadro" */
+    lbImg.style.animation = 'none';
+    void lbImg.offsetWidth;
+    lbImg.style.animation = '';
+
+    /* vizinhos em cache: as chapas são grandes e sem isto cada seta abria um
+       branco enquanto o arquivo baixava. Só os dois adjacentes — precarregar
+       a galeria inteira custaria mais que a navegação economiza. */
+    [index - 1, index + 1].forEach((n) => {
+      const nb = group[(n + group.length) % group.length];
+      if (nb && nb !== t && nb.dataset.full) { const im = new Image(); im.src = nb.dataset.full; }
+    });
   };
 
   const openLb = (tile) => {
     group = collect(tile);
     if (!group.includes(tile)) group = [tile];
     show(group.indexOf(tile));
+    /* galeria de uma imagem só: as setas não teriam pra onde ir */
+    lb.classList.toggle('is-single', group.length < 2);
     lb.hidden = false;
     document.body.classList.add('is-locked');
+    lbOpener = tile;
     $('#lbClose')?.focus();
   };
   const closeLb = () => {
     lb.hidden = true;
     lbImg.src = '';
     document.body.classList.remove('is-locked');
+    /* de volta à chapa que abriu — sem isto o foco caía no <body> e o Tab
+       seguinte recomeçava do topo da página. Nas chapas .ishot quem recebe
+       foco é o botão interno: o .tile ali é uma <div>, e .focus() numa div
+       sem tabindex não faz nada. */
+    (lbOpener?.querySelector('.ishot__open') || lbOpener)?.focus();
+    lbOpener = null;
   };
 
   document.addEventListener('click', (e) => {
@@ -159,6 +231,7 @@
     if (tile) { e.preventDefault(); openLb(tile); }
   });
 
+  lb?.addEventListener('keydown', trapIn(lb));
   $('#lbClose')?.addEventListener('click', closeLb);
   $('#lbPrev')?.addEventListener('click', () => show(index - 1));
   $('#lbNext')?.addEventListener('click', () => show(index + 1));
@@ -195,7 +268,10 @@
      Pausa em hover/foco (a WCAG 2.2.2 pede um jeito de parar conteúdo que
      se atualiza sozinho), fora da tela e com a aba em segundo plano; e não
      gira nada sob prefers-reduced-motion. */
-  const SHOT_MS = 10000;
+  /* Era 10s. O atraso inicial sorteado abaixo e um MULTIPLO deste valor
+     (.2 a 1x), entao ele acompanha sozinho: o desencontro entre as quatro
+     chapas continua proporcional ao passo, sem segundo numero pra ajustar. */
+  const SHOT_MS = 5000;
   const shots = [];
 
   $$('.ishot').forEach((shot) => {
@@ -321,7 +397,7 @@
     setTimeout(() => {
       if (!vHost.querySelector('canvas')) {
         vFall.hidden = false;
-        $$('.viewer__status').forEach(st => { st.textContent = 'Anteprima turntable'; });
+        $$('.viewer__status').forEach(st => { st.textContent = 'Anteprima rotazione'; });
       }
     }, 7000);
   }
