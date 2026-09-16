@@ -534,6 +534,61 @@
     else stage.requestFullscreen?.().catch(() => {});
   });
 
+  /* ── 8b. Avanço por capítulo (teclado / apresentador) ──
+     Esta página é uma APRESENTAÇÃO, não um site que se navega. Quem
+     apresenta usa um clicker, e clicker não é um dispositivo especial: ele
+     se anuncia como teclado e manda PageDown/PageUp (alguns mandam as setas
+     horizontais). Sem tratamento, PageDown rola uma tela cheia e para no
+     meio de uma fileira de chapas — a metade de cima de uma imagem e a
+     metade de baixo da anterior. É o detalhe que mais denuncia "site" no
+     lugar de "apresentação".
+     Aqui cada <section> é uma passagem, e avançar leva sempre ao INÍCIO da
+     próxima. O scroll-padding-top:57px do :root já desconta a barra fixa,
+     então a chapa nunca nasce por baixo dela.
+     Voltar no meio de uma seção leva ao começo dela antes de ir pra
+     anterior — é como se comporta qualquer deck, e evita que uma passagem
+     alta seja pulada inteira só porque começou fora da tela. */
+  const beats = $$('main > section');
+  const NAV_H = 57;
+
+  const goBeat = (dir) => {
+    const eps = 4;                     /* folga pro arredondamento do layout */
+    let target;
+    if (dir > 0) {
+      target = beats.find(el => el.getBoundingClientRect().top > NAV_H + eps);
+    } else {
+      const behind = beats.filter(el => el.getBoundingClientRect().top < NAV_H - eps);
+      target = behind[behind.length - 1];
+    }
+    if (!target) return false;         /* já está na ponta: deixa o scroll nativo */
+    target.scrollIntoView({ block: 'start' });
+    return true;
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
+    /* overlays têm dono do teclado: a lightbox já usa as setas, e o filme e
+       o menu são modais */
+    if (film && !film.hidden) return;
+    if (lb && !lb.hidden) return;
+    if (menu?.classList.contains('is-open')) return;
+
+    const ae = document.activeElement;
+    if (ae && (ae.isContentEditable || /^(input|textarea|select)$/i.test(ae.tagName))) return;
+
+    let dir = 0;
+    if (e.key === 'PageDown' || e.key === 'ArrowRight')     dir = 1;
+    else if (e.key === 'PageUp' || e.key === 'ArrowLeft')   dir = -1;
+    else if (e.key === ' ' || e.key === 'Spacebar') {
+      /* espaço em cima de um controle ATIVA o controle — só vira "avançar"
+         quando o foco não está em nada clicável */
+      if (ae && ae.closest('button, a[href], [tabindex]:not([tabindex="-1"])')) return;
+      dir = e.shiftKey ? -1 : 1;
+    } else return;
+
+    if (goBeat(dir)) e.preventDefault();
+  });
+
   /* ── 9. Watchdog do viewer ──────────────────────────
      Se o three.js (CDN) não carregar em 7s, mostra o turntable
      em vez de deixar um retângulo vazio na frente do cliente. */
