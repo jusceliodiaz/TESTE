@@ -78,7 +78,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=93" />
+    <link rel="stylesheet" href="assets/css/style.css?v=98" />
   </head>
   <body>
     <a class="skip" href="#top">Vai al contenuto</a>
@@ -88,6 +88,29 @@
     </div>
 
     <header class="nav" id="nav">
+      <!-- Pausa global do movimento. Fica na ESQUERDA: sem marca no topo o
+       flex do nav deixava esse lado vazio, e o controle é o tipo de coisa
+       que se procura antes de rolar, não no meio do caminho.
+       Um botão pra três fontes (hera, sliders .ishot, loops do #motion) +
+       o giro automático do visualizador — ver a seção 0a do main.js.
+       O rótulo visível diz a AÇÃO ("Pausa" / "Riprendi"), não o estado, e
+       o ícone acompanha. Sob prefers-reduced-motion o CSS esconde: ali já
+       não há movimento nenhum pra parar. -->
+      <button
+        class="nav__motion"
+        id="btnMotion"
+        type="button"
+        aria-label="Metti in pausa i video e le animazioni"
+      >
+        <svg class="i-pause" viewBox="0 0 24 24" width="11" height="11" aria-hidden="true">
+          <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" />
+        </svg>
+        <svg class="i-play" viewBox="0 0 24 24" width="11" height="11" aria-hidden="true">
+          <path d="M8 5v14l11-7z" fill="currentColor" />
+        </svg>
+        <span class="nav__motion-label">Pausa</span>
+      </button>
+
       <button
         class="nav__toggle"
         id="navToggle"
@@ -1205,6 +1228,213 @@
         </div>
       </section>
 
+
+      <!-- ═══════════════ MOTION: loops webm (4 quadrate + 8 cinema) ═══════════════ -->
+      <!-- Chapas em movimento, no lugar de GIF: webm em loop, mudo e inline.
+           Nao sao clicaveis (nao entram na lightbox, que so sabe abrir <img>);
+           sao a versao animada das chapas paradas acima. O main.js so deixa
+           tocar o que esta na tela — doze decoders simultaneos brigariam com
+           os dois contextos WebGL do visualizador, mesmo motivo pelo qual o
+           loop da hero pausa fora de vista. preload="none": nada e baixado
+           ate a faixa chegar perto do olho. -->
+      <section class="sheet" id="motion" data-reveal>
+        <div class="cell cell--text cell--center w12">
+          <h2 class="h2">Studi <em>in movimento</em></h2>
+        </div>
+
+        <div class="strip strip--4">
+          <div class="vplate ar-1">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/sq-01.webp"
+              aria-label="Dettaglio della seduta in pelle cuoio sul basamento in noce"
+            >
+              <source src="assets/video/loops/sq-01.mp4" type="video/mp4" />
+              <source src="assets/video/loops/sq-01.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Cuoio</span>
+          </div>
+          <div class="vplate ar-1">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/sq-02.webp"
+              aria-label="Poltrona in tessuto bouclé avorio su basamento in rovere chiaro"
+            >
+              <source src="assets/video/loops/sq-02.mp4" type="video/mp4" />
+              <source src="assets/video/loops/sq-02.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Bouclé</span>
+          </div>
+          <div class="vplate ar-1">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/sq-03.webp"
+              aria-label="Poltrona in lino naturale su basamento scuro, vista di tre quarti"
+            >
+              <source src="assets/video/loops/sq-03.mp4" type="video/mp4" />
+              <source src="assets/video/loops/sq-03.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Lino</span>
+          </div>
+          <div class="vplate ar-1">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/sq-04.webp"
+              aria-label="Dettaglio della trama del lino e del basamento in legno scuro"
+            >
+              <source src="assets/video/loops/sq-04.mp4" type="video/mp4" />
+              <source src="assets/video/loops/sq-04.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Trama</span>
+          </div>
+        </div>
+
+        <!-- Onze chapas 21:9, nao doze: a primeira atravessa as duas colunas
+             como chapa de abertura e as outras dez caem em 5 fileiras
+             limpas. Foi o jeito de acomodar um numero impar sem deixar um
+             buraco na ultima fileira nem inventar uma chapa vazia — e o
+             plate de abertura e leitura de contact sheet, nao remendo.
+             Trocar o numero de videos? Mantenha o total IMPAR com a lead, ou
+             PAR sem ela. -->
+        <div class="strip strip--2">
+          <div class="vplate ar-cine vplate--lead">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-01.webp"
+              aria-label="La sala ad arco con le poltrone in pelle cuoio e le lampade a sospensione"
+            >
+              <source src="assets/video/loops/wide-01.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-01.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Sala — cuoio</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-02.webp"
+              aria-label="La stessa sala nella luce fredda del mattino, con le sedute chiare"
+            >
+              <source src="assets/video/loops/wide-02.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-02.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Mattino</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-03.webp"
+              aria-label="La sala in piena luce di giorno, con le ombre del fogliame sulla parete"
+            >
+              <source src="assets/video/loops/wide-03.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-03.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Giorno</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-04.webp"
+              aria-label="Dettaglio in controluce dello schienale in pelle cuoio su fondo scuro"
+            >
+              <source src="assets/video/loops/wide-04.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-04.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Controluce</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-05.webp"
+              aria-label="La poltrona in lino isolata su fondo grigio, luce da studio"
+            >
+              <source src="assets/video/loops/wide-05.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-05.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Studio</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-06.webp"
+              aria-label="La sala vista oltre una palma in vaso, con le poltrone in pelle sul fondo"
+            >
+              <source src="assets/video/loops/wide-06.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-06.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Verde</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-07.webp"
+              aria-label="La sala di notte, crepuscolo blu con le lampade a sospensione accese"
+            >
+              <source src="assets/video/loops/wide-07.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-07.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Notte</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-08.webp"
+              aria-label="La poltrona in un ambiente con quadro, mensola, lampada ad arco e tappeto"
+            >
+              <source src="assets/video/loops/wide-08.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-08.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Ambiente</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-09.webp"
+              aria-label="La poltrona in pelle grigia davanti a una parete in intonaco, su tappeto in juta"
+            >
+              <source src="assets/video/loops/wide-09.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-09.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Intonaco</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-10.webp"
+              aria-label="La poltrona in pelle cuoio in una biblioteca, con librerie e finestra sulla città"
+            >
+              <source src="assets/video/loops/wide-10.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-10.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Biblioteca</span>
+          </div>
+          <div class="vplate ar-cine">
+            <video
+              autoplay muted loop playsinline preload="none"
+              data-loop
+              data-poster="assets/img/loops/wide-11.webp"
+              aria-label="La sala ad arco sfocata dietro una felce in primo piano"
+            >
+              <source src="assets/video/loops/wide-11.mp4" type="video/mp4" />
+              <source src="assets/video/loops/wide-11.webm" type="video/webm" />
+            </video>
+            <span class="plate-pill" aria-hidden="true">Felce</span>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Rodapé = navegação. Mesmas âncoras do menu do topo, mais o retorno ao
@@ -1300,7 +1530,7 @@
       </figure>
     </div>
 
-    <script src="assets/js/main.js?v=36" defer></script>
+    <script src="assets/js/main.js?v=39" defer></script>
 
     <!-- three.js (ES modules via CDN). Troque a versão só se testar antes. -->
     <script type="importmap">
@@ -1311,6 +1541,6 @@
         }
       }
     </script>
-    <script type="module" src="assets/js/viewer.js?v=11"></script>
+    <script type="module" src="assets/js/viewer.js?v=12"></script>
   </body>
 </html>

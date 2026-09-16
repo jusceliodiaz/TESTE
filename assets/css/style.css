@@ -194,6 +194,34 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .nav__link--cta::after{ display:none; }
 .nav__link--cta:hover{ background:var(--txt); border-color:var(--txt); color:#0b0b0c; }
 
+/* Pausa global do movimento: mesma familia dos chips do visualizador —
+   mono, quadrado, fio --line-3 (3.36:1, o minimo da 1.4.11 pra borda que
+   DEFINE um controle). Vai na esquerda do nav, o vao que sobrou quando a
+   marca saiu; com dois filhos o space-between do .nav resolve sozinho.
+   44px de altura: a 2.5.8 pede 24 CSS px, e este e um controle que se usa
+   com pressa, entao vale o alvo cheio. */
+.nav__motion{
+  display:inline-flex; align-items:center; gap:.55em;
+  min-height:44px; padding:.45em .9em;
+  border:1px solid var(--line-3);
+  font:var(--label); font-size:.72rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--dim);
+  white-space:nowrap;
+  transition:color .25s var(--ease), border-color .25s var(--ease);
+}
+.nav__motion:hover{ color:var(--txt); border-color:var(--txt); }
+/* pausado vira --accent: o unico estado da pagina que muda algo global
+   merece ser visivel sem ter que ler o rotulo */
+.nav__motion.is-paused{ color:var(--accent); border-color:var(--accent); }
+/* o icone troca junto com o rotulo, e ambos dizem a ACAO: barras enquanto
+   toca (a acao e pausar), triangulo enquanto pausado (a acao e retomar) */
+.nav__motion .i-play{ display:none; }
+.nav__motion.is-paused .i-play{ display:block; }
+.nav__motion.is-paused .i-pause{ display:none; }
+/* sem movimento nenhum pra parar, o botao seria um controle que nao faz
+   nada — e um controle morto e pior que a ausencia dele */
+@media (prefers-reduced-motion:reduce){ .nav__motion{ display:none; } }
+
 .nav__toggle{ display:none; width:44px; height:44px; position:relative; margin-right:-10px; }
 .nav__toggle span{
   position:absolute; left:12px; right:12px; height:1px; background:var(--txt);
@@ -451,6 +479,17 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    as vizinhas e a fileira perderia a linha de base. */
 .strip--concept{ grid-template-columns:297fr 297fr 224fr; }
 
+/* faixa de quatro: os loops quadrados do #motion. Quatro 1:1 numa folha de
+   12 colunas dividem exato; a .strip padrao (5) deixaria uma coluna vazia. */
+.strip--4{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+
+/* chapa de abertura: atravessa as duas colunas da .strip--2. Existe porque
+   os 21:9 sao ONZE — um numero impar em duas colunas deixaria a ultima
+   sozinha, com meia fileira de vao ao lado. Promovendo a primeira, sobram
+   dez, que e 5 fileiras exatas. No telefone a faixa ja e de uma coluna so,
+   entao la isto nao muda nada. */
+.vplate--lead{ grid-column:1 / -1; }
+
 .tile{
   display:block; position:relative; overflow:hidden; isolation:isolate;
   width:100%; min-height:0;
@@ -488,6 +527,20 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
   content:"In arrivo";
   font:var(--label); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
   color:var(--dim);
+}
+
+/* chapa de video: mesma geometria da .tile (recorta por cover, sem estourar
+   a coluna), mas sem nada de clique — estes loops nao abrem lightbox, que so
+   sabe exibir <img>. Por isso classe propria em vez de .tile: herdar de la
+   traria cursor:pointer e o zoom de hover, que prometeriam um clique que nao
+   existe. */
+.vplate{
+  display:block; position:relative; overflow:hidden;
+  width:100%; min-height:0;
+  background:var(--bg-2);
+}
+.vplate video{
+  display:block; width:100%; height:100%; object-fit:cover;
 }
 
 /* ── Interior shots: mini-slider de dois quadros ───────── */
@@ -587,6 +640,11 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .ar-cine { aspect-ratio:33/14; }
 /* o render final do #interior e 1920x1080 — 16/9 exato, sem recorte */
 .ar-169 { aspect-ratio:16/9; }
+/* Os loops do #motion sao 2208x936 = 92:39 = 2.3590, e .ar-cine e 33/14 =
+   2.3571: 0.08% de diferenca, ou seja o object-fit:cover nao chega a cortar
+   um pixel. Era .ar-219 (21:9 = 2.3333), que cortava ~1%. Reusar a classe
+   que ja existe tambem mantem UMA razao de cinema na pagina, em vez de
+   duas quase iguais. */
 
 /* ── Data rows: keys and values, no prose ──────────────── */
 
@@ -968,6 +1026,9 @@ body.is-locked{ overflow:hidden; }
   /* e a do concept segura as proporcoes: com repeat(3,1fr) as tres ficariam
      da mesma largura, e a 16/9 sairia mais alta que as duas vizinhas */
   .strip--concept{ grid-template-columns:297fr 297fr 224fr; }
+  /* os loops quadrados caem pra 2: com as 3 colunas da .strip padrao os
+     quatro quebrariam 3+1, deixando um orfao na segunda fileira */
+  .strip--4{ grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 
 @media (max-width:640px){
@@ -980,6 +1041,9 @@ body.is-locked{ overflow:hidden; }
   /* idem pro concept — e ali o contact sheet de seis quadros do concept2
      seria ilegivel a um terco da largura */
   .strip--concept{ grid-template-columns:1fr; }
+  /* 1:1 em meia tela ainda tem ~170px de lado: da pra ler, entao os
+     quadrados ficam em 2 (so os 21:9 da .strip--2 empilham) */
+  .strip--4{ grid-template-columns:repeat(2,minmax(0,1fr)); }
   .viewer__ui{ left:10px; right:10px; bottom:10px; width:auto; }
 
   .nav__toggle{ display:block; }
@@ -990,9 +1054,19 @@ body.is-locked{ overflow:hidden; }
     -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
     padding:70px var(--gut) 30px;
     border-bottom:1px solid var(--line);
-    transform:translateY(-101%); transition:transform .45s var(--ease);
+    /* transform sozinho NAO tira do tab order: o painel saia da vista mas os
+       quatro links seguiam focaveis, e quem navega por teclado ou switch
+       tabulava do hamburguer direto pra dentro de um menu invisivel.
+       visibility:hidden tira de verdade, em todo navegador, e o delay de
+       .45s segura ate a animacao de saida terminar — sem ele o painel
+       sumiria seco em vez de deslizar. */
+    transform:translateY(-101%); visibility:hidden;
+    transition:transform .45s var(--ease), visibility 0s linear .45s;
   }
-  .nav__menu.is-open{ transform:none; }
+  .nav__menu.is-open{
+    transform:none; visibility:visible;
+    transition:transform .45s var(--ease), visibility 0s;
+  }
   .nav__link{ font-size:1.24rem; letter-spacing:.06em; padding:.6rem 0; }
   .nav__link--cta{ margin-top:.7rem; }
 }

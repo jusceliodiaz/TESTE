@@ -10,6 +10,44 @@
   const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* ── 0a. Pausa global de movimento ─────────────────────
+     A página soma três fontes de movimento contínuo: o loop da hero, os
+     quatro sliders .ishot e os doze loops do #motion. A WCAG 2.2.2 pede UM
+     mecanismo pra parar o que se move sozinho por mais de 5s — e "pausa no
+     hover", que era o que existia, não é mecanismo nenhum pra quem não usa
+     ponteiro.
+     Em vez de um controle por peça (doze botõezinhos sobre as chapas), um
+     só no topo: cada fonte registra aqui o que fazer, o botão avisa todas
+     de uma vez, e o visualizador 3D — que é outro módulo — escuta o mesmo
+     estado por evento.
+     Fora do escopo de propósito: as entradas [data-reveal], que acontecem
+     uma vez e acabam. A 2.2.2 fala de movimento CONTÍNUO.
+     Não persiste entre visitas, também de propósito: quem precisa disso
+     por condição vestibular já está coberto pelo prefers-reduced-motion,
+     que desliga tudo sozinho sem pedir clique nenhum. */
+  let motionPaused = false;
+  const motionSubs = [];
+  const onMotion = (fn) => motionSubs.push(fn);
+
+  const btnMotion = $('#btnMotion');
+  const setMotion = (paused) => {
+    motionPaused = paused;
+    if (btnMotion) {
+      btnMotion.classList.toggle('is-paused', paused);
+      btnMotion.setAttribute('aria-label', paused
+        ? 'Riprendi i video e le animazioni'
+        : 'Metti in pausa i video e le animazioni');
+      const label = $('.nav__motion-label', btnMotion);
+      /* o rótulo visível diz a AÇÃO, não o estado — e continua contido no
+         aria-label acima, como a 2.5.3 (Label in Name) exige */
+      if (label) label.textContent = paused ? 'Riprendi' : 'Pausa';
+    }
+    motionSubs.forEach(fn => fn(paused));
+    /* viewer.js roda como módulo separado e não enxerga nada daqui */
+    document.dispatchEvent(new CustomEvent('plinth:motion', { detail: { paused } }));
+  };
+  btnMotion?.addEventListener('click', () => setMotion(!motionPaused));
+
   /* ── 0. Foco dentro de um diálogo ──────────────────────
      Os dois overlays (filme e lightbox) se declaram aria-modal, mas o Tab
      saía deles e ia percorrer a folha inteira ATRÁS do overlay — teclado e
@@ -59,21 +97,40 @@
   }
 
   /* ── 3. Scroll-spy ────────────────────────────────────── */
+
+  /* A versão anterior acendia o link só enquanto a PRÓPRIA seção cruzava uma
+     faixa de 5% no meio da tela (rootMargin -45%/-50%). Como #modeling e
+     #post são seções que contêm apenas o título, o link piscava por um
+     instante e apagava — e a pessoa percorria Argilla + Render in studio
+     (várias telas) com NENHUM item ativo, sem referência de onde estava.
+     O critério agora é "a última seção cuja borda de cima já passou da
+     linha": o rótulo de um capítulo fica aceso pelo capítulo inteiro,
+     inclusive nas seções sem âncora que vêm depois dele. */
   const links = $$('.nav__link');
-  const sections = links
+  const marks = links
     .map(l => ({ link: l, el: $(l.getAttribute('href')) }))
     .filter(x => x.el);
 
-  if ('IntersectionObserver' in window && sections.length) {
-    const spy = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        links.forEach(l => l.classList.remove('is-active'));
-        const hit = sections.find(s => s.el === e.target);
-        if (hit) hit.link.classList.add('is-active');
-      });
-    }, { threshold: 0, rootMargin: '-45% 0px -50% 0px' });
-    sections.forEach(s => spy.observe(s.el));
+  if (marks.length) {
+    /* ordem do DOM, não a da barra: #viewer aparece na página ANTES de #post
+       e #interior, mas é o último item do menu */
+    const ordered = marks.slice().sort((a, b) =>
+      (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
+
+    let queued = false;
+    const spy = () => {
+      queued = false;
+      const lineY = window.innerHeight * 0.45;
+      let current = null;
+      ordered.forEach((m) => { if (m.el.getBoundingClientRect().top <= lineY) current = m; });
+      links.forEach(l => l.classList.toggle('is-active', !!current && l === current.link));
+    };
+    /* uma leitura de layout por QUADRO, não por evento de scroll: sem o rAF
+       são 4 getBoundingClientRect a cada tick do scroll, no meio do paint */
+    const queueSpy = () => { if (!queued) { queued = true; requestAnimationFrame(spy); } };
+    document.addEventListener('scroll', queueSpy, { passive: true });
+    window.addEventListener('resize', queueSpy);
+    spy();
   }
 
   /* ── 4. Mobile menu ──────────────────────────────────── */
@@ -145,7 +202,7 @@
     player.pause();
     film.hidden = true;
     document.body.classList.remove('is-locked');
-    if (!reduce) heroVid?.play().catch(() => {});
+    if (!reduce && !motionPaused) heroVid?.play().catch(() => {});
     /* volta pra quem abriu, não pro botão fixo: o filme pode ser aberto de
        mais de um lugar no futuro e o foco tem que seguir o gesto */
     (filmOpener || $('#filmOpen'))?.focus();
@@ -170,15 +227,82 @@
      está aberto (o modal esconde o vídeo do hero de propósito — ver
      body.is-locked no CSS). */
   if (heroVid && !reduce && 'IntersectionObserver' in window) {
+    let heroOn = false;
+    /* três condições, uma função só: na tela, movimento não pausado, e o
+       modal do filme fechado. Qualquer uma delas mudando reavalia o mesmo
+       ponto, em vez de cada evento chamar play/pause por conta própria. */
+    const syncHero = () => {
+      if (heroOn && !motionPaused && !document.body.classList.contains('is-locked')) {
+        heroVid.play().catch(() => {});
+      } else {
+        heroVid.pause();
+      }
+    };
     new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          if (!document.body.classList.contains('is-locked')) heroVid.play().catch(() => {});
-        } else {
-          heroVid.pause();
-        }
-      });
+      entries.forEach((e) => { heroOn = e.isIntersecting; syncHero(); });
     }, { threshold: 0 }).observe(heroVid);
+    onMotion(syncHero);
+  }
+
+  /* ── 5b. Loops do #motion ────────────────────────────── */
+
+  /* Doze <video> em autoplay é o mesmo problema da hero multiplicado: cada um
+     mantém um decoder vivo enquanto está "tocando", mesmo a três telas de
+     distância, e no fim da página eles dividiriam a GPU com os dois contextos
+     WebGL do visualizador. Então só toca o que está na tela — e quem sai dela
+     pausa e devolve o decoder.
+     Sob prefers-reduced-motion nenhum deles toca: são loops decorativos, e o
+     atributo autoplay do markup (que existe pro caso do JS falhar) é desfeito
+     aqui no primeiro quadro. */
+  const loops = $$('video[data-loop]');
+  if (loops.length) {
+    if (reduce) {
+      /* sem movimento os loops nunca tocam — então o poster deixa de ser
+         placeholder e passa a ser a chapa. Carrega logo, é o que se vê. */
+      loops.forEach((v) => {
+        v.autoplay = false;
+        v.pause();
+        if (v.dataset.poster) { v.poster = v.dataset.poster; delete v.dataset.poster; }
+      });
+    } else if ('IntersectionObserver' in window) {
+      /* um conjunto do que está na tela + uma única função que decide, pelo
+         mesmo motivo da hera: visibilidade, aba e pausa global são três
+         entradas do mesmo estado, não três donos do play/pause */
+      const onScreen = new Set();
+      const syncLoops = () => {
+        loops.forEach((v) => {
+          if (onScreen.has(v) && !motionPaused && !document.hidden) v.play().catch(() => {});
+          else v.pause();
+        });
+      };
+      /* O poster entra por JS, não pelo atributo: `poster` não aceita
+         loading="lazy", então doze deles no markup seriam 340 KB baixados
+         no load da página mesmo pra quem nunca rola até aqui. Com
+         data-poster a imagem só é pedida quando a chapa se aproxima — e
+         chega antes do vídeo, porque um webp de ~30 KB resolve muito mais
+         rápido que abrir o mp4 com preload="none".
+         Margem de 300px (era 200): o poster precisa de um respiro a mais
+         que o play pra não aparecer já dentro do campo de visão. */
+      const loopIO = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            if (e.target.dataset.poster) {
+              e.target.poster = e.target.dataset.poster;
+              delete e.target.dataset.poster;
+            }
+            onScreen.add(e.target);
+          } else {
+            onScreen.delete(e.target);
+          }
+        });
+        syncLoops();
+      }, { rootMargin: '300px 0px' });
+      loops.forEach((v) => { v.pause(); loopIO.observe(v); });
+      /* aba em segundo plano: o navegador já costuma estrangular o decoder,
+         mas pausar explícito evita o caso em que ele não faz isso */
+      document.addEventListener('visibilitychange', syncLoops);
+      onMotion(syncLoops);
+    }
   }
 
   /* ── 6. Lightbox ─────────────────────────────────────── */
@@ -322,7 +446,7 @@
     const tick = () => { paint(i + 1); timer = setTimeout(tick, SHOT_MS); };
     const start = (delay = SHOT_MS) => {
       stop();
-      if (reduce || held || !onScreen || document.hidden) return;
+      if (reduce || motionPaused || held || !onScreen || document.hidden) return;
       timer = setTimeout(tick, delay);
     };
 
@@ -360,6 +484,9 @@
     }, { rootMargin: '0px 0px -10% 0px' });
     shots.forEach(s => shotIO.observe(s.el));
     document.addEventListener('visibilitychange', () => shots.forEach(s => s.sync()));
+    /* sync() chama start(), que agora cai fora na guarda quando pausado —
+       ou seja, o mesmo caminho serve pra parar e pra retomar */
+    onMotion(() => shots.forEach(s => s.sync()));
   }
 
   /* ── 7. Turntable fallback (drag-scrub) ──────────────── */

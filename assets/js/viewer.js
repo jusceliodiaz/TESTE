@@ -330,7 +330,17 @@ const btnSpin = document.getElementById('btnSpin');
    sendo a única forma de desligar de verdade. */
 let spinWanted = true;
 let dragging   = false;
-const applySpin = () => { primary.controls.autoRotate = spinWanted && !dragging; };
+/* terceiro estado, vindo de fora: a pausa global de movimento do nav. Este
+   módulo não enxerga nada do main.js, então o estado chega por evento.
+   Só desliga o giro automático — arrastar continua funcionando, porque
+   movimento iniciado pelo usuário não é o que a WCAG 2.2.2 trata. */
+let motionPaused = false;
+const applySpin = () => { primary.controls.autoRotate = spinWanted && !dragging && !motionPaused; };
+
+document.addEventListener('plinth:motion', (e) => {
+  motionPaused = !!e.detail?.paused;
+  applySpin();
+});
 
 btnSpin?.addEventListener('click', () => {
   spinWanted = btnSpin.getAttribute('aria-pressed') !== 'true';
