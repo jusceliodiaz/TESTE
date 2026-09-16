@@ -483,13 +483,6 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    12 colunas dividem exato; a .strip padrao (5) deixaria uma coluna vazia. */
 .strip--4{ grid-template-columns:repeat(4,minmax(0,1fr)); }
 
-/* chapa de abertura: atravessa as duas colunas da .strip--2. Existe porque
-   os 21:9 sao ONZE — um numero impar em duas colunas deixaria a ultima
-   sozinha, com meia fileira de vao ao lado. Promovendo a primeira, sobram
-   dez, que e 5 fileiras exatas. No telefone a faixa ja e de uma coluna so,
-   entao la isto nao muda nada. */
-.vplate--lead{ grid-column:1 / -1; }
-
 .tile{
   display:block; position:relative; overflow:hidden; isolation:isolate;
   width:100%; min-height:0;
@@ -542,6 +535,11 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 .vplate video{
   display:block; width:100%; height:100%; object-fit:cover;
 }
+/* o vao da ultima fileira: as chapas 21:9 sao onze, entao sobra uma celula.
+   Como o fundo da .strip e --line (e dali que sai o fio de 1px pelo gap),
+   uma celula sem nada sairia #24242a — um bloco cinza que le como erro.
+   Pintada de --bg ela vira o que e: falta de chapa, nao chapa vazia. */
+.vplate--void{ background:var(--bg); }
 
 /* ── Interior shots: mini-slider de dois quadros ───────── */
 

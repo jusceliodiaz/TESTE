@@ -78,7 +78,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=98" />
+    <link rel="stylesheet" href="assets/css/style.css?v=99" />
   </head>
   <body>
     <a class="skip" href="#top">Vai al contenuto</a>
@@ -1293,15 +1293,15 @@
           </div>
         </div>
 
-        <!-- Onze chapas 21:9, nao doze: a primeira atravessa as duas colunas
-             como chapa de abertura e as outras dez caem em 5 fileiras
-             limpas. Foi o jeito de acomodar um numero impar sem deixar um
-             buraco na ultima fileira nem inventar uma chapa vazia — e o
-             plate de abertura e leitura de contact sheet, nao remendo.
-             Trocar o numero de videos? Mantenha o total IMPAR com a lead, ou
-             PAR sem ela. -->
+        <!-- Onze chapas 21:9 em duas colunas, entao a ultima fileira fica com
+             UMA chapa e um vao ao lado. E de proposito: esticar uma delas
+             pra fechar a fileira mudaria o tamanho de uma peca so, e a
+             comparacao entre as cenas depende de todas terem a mesma
+             medida. O vao leva .vplate--void porque o fundo da .strip e
+             --line (o fio de 1px sai dai): sem ele a celula vazia sairia
+             como um bloco cinza, nao como vazio. -->
         <div class="strip strip--2">
-          <div class="vplate ar-cine vplate--lead">
+          <div class="vplate ar-cine">
             <video
               autoplay muted loop playsinline preload="none"
               data-loop
@@ -1433,6 +1433,7 @@
             </video>
             <span class="plate-pill" aria-hidden="true">Felce</span>
           </div>
+          <div class="vplate vplate--void" aria-hidden="true"></div>
         </div>
       </section>
     </main>
