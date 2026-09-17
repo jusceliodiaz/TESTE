@@ -78,7 +78,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..600&family=IBM+Plex+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="assets/css/style.css?v=99" />
+    <link rel="stylesheet" href="assets/css/style.css?v=100" />
   </head>
   <body>
     <a class="skip" href="#top">Vai al contenuto</a>
@@ -96,6 +96,14 @@
        O rótulo visível diz a AÇÃO ("Pausa" / "Riprendi"), não o estado, e
        o ícone acompanha. Sob prefers-reduced-motion o CSS esconde: ali já
        não há movimento nenhum pra parar. -->
+      <!-- Posicao na apresentacao. aria-hidden de proposito: quem usa leitor
+       de tela ja recebe essa informacao pelo link ativo do menu, e um
+       contador que se reescreve a cada rolagem viraria ruido.
+       Fica colado na Pausa: os dois sao controle de palco, nao conteudo. -->
+      <p class="nav__count" id="navCount" aria-hidden="true">
+        <span id="navCountNow">—</span><span class="nav__count-sep">/</span><span id="navCountAll">05</span>
+      </p>
+
       <button
         class="nav__motion"
         id="btnMotion"
@@ -126,7 +134,7 @@
         <a class="nav__link" href="#post">Postproduzione</a>
         <a class="nav__link" href="#interior">Interni</a>
         <a class="nav__link" href="#motion">Movimento</a>
-        <a class="nav__link nav__link--cta" href="#viewer">01 3D</a>
+        <a class="nav__link nav__link--cta" href="#viewer">02 3D</a>
       </nav>
     </header>
 
@@ -456,6 +464,7 @@
        titulo de secao na mesma forma do "Interior scene" -->
       <section class="sheet" id="modeling" data-reveal>
         <div class="cell cell--text cell--center w12">
+          <span class="idx">01</span>
           <h2 class="h2">Modellazione <em>Alma</em></h2>
         </div>
       </section>
@@ -635,7 +644,7 @@
       <!-- ═══════════════ 01 VIEWER ═══════════════ -->
       <section class="sheet" id="viewer" data-reveal>
         <div class="cell cell--text w3">
-          <span class="idx">01</span>
+          <span class="idx">02</span>
           <h2 class="h2">La mesh finale, <em>nel tuo browser.</em></h2>
           <p class="line">Orbita, zooma, attiva il wireframe.</p>
         </div>
@@ -687,6 +696,7 @@
       <!-- ═══════════════ PIPELINE: Postproduction ═══════════════ -->
       <section class="sheet" id="post" data-reveal>
         <div class="cell cell--text cell--center w12">
+          <span class="idx">03</span>
           <h2 class="h2">Post<em>produzione</em></h2>
         </div>
       </section>
@@ -946,6 +956,7 @@
       <!-- ═══════════════ INTERIOR: seis vistas (1 render pronto + 5 pendentes) ═══════════════ -->
       <section class="sheet" id="interior" data-reveal>
         <div class="cell cell--text cell--center w12">
+          <span class="idx">04</span>
           <h2 class="h2">Scena <em>d'interni</em></h2>
         </div>
 
@@ -1240,6 +1251,7 @@
            ate a faixa chegar perto do olho. -->
       <section class="sheet" id="motion" data-reveal>
         <div class="cell cell--text cell--center w12">
+          <span class="idx">05</span>
           <h2 class="h2">Studi <em>in movimento</em></h2>
         </div>
 
@@ -1456,7 +1468,7 @@
         <a class="foot__link" href="#post">Postproduzione</a>
         <a class="foot__link" href="#interior">Interni</a>
         <a class="foot__link" href="#motion">Movimento</a>
-        <a class="foot__link" href="#viewer">01 3D</a>
+        <a class="foot__link" href="#viewer">02 3D</a>
       </nav>
 
       <p class="foot__colophon">
@@ -1533,7 +1545,7 @@
       </figure>
     </div>
 
-    <script src="assets/js/main.js?v=40" defer></script>
+    <script src="assets/js/main.js?v=41" defer></script>
 
     <!-- three.js (ES modules via CDN). Troque a versão só se testar antes. -->
     <script type="importmap">

@@ -117,6 +117,16 @@
     const ordered = marks.slice().sort((a, b) =>
       (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
 
+    /* o contador do nav sai do MESMO cálculo do link ativo: dois indicadores
+       da mesma coisa não podem discordar, e discordariam na hora em que
+       alguém estivesse olhando — na virada de capítulo */
+    const countNow = $('#navCountNow');
+    const chapter = new Map(ordered.map((m, n) => [m.link, String(n + 1).padStart(2, '0')]));
+    /* o total vem de ordered.length, não do markup: um capítulo a mais no
+       menu se conta sozinho, em vez de deixar um "05" velho mentindo */
+    const countAll = $('#navCountAll');
+    if (countAll) countAll.textContent = String(ordered.length).padStart(2, '0');
+
     let queued = false;
     const spy = () => {
       queued = false;
@@ -124,6 +134,9 @@
       let current = null;
       ordered.forEach((m) => { if (m.el.getBoundingClientRect().top <= lineY) current = m; });
       links.forEach(l => l.classList.toggle('is-active', !!current && l === current.link));
+      /* travessão antes do capítulo 01: na abertura não há capítulo nenhum,
+         e mostrar "01" ali seria mentir sobre onde a pessoa está */
+      if (countNow) countNow.textContent = current ? chapter.get(current.link) : '—';
     };
     /* uma leitura de layout por QUADRO, não por evento de scroll: sem o rAF
        são 4 getBoundingClientRect a cada tick do scroll, no meio do paint */

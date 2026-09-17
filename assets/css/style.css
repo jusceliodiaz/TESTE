@@ -152,7 +152,7 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
 
 .nav{
   position:fixed; top:0; left:0; right:0; z-index:110;
-  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  display:flex; align-items:center; justify-content:space-between; gap:.9rem;
   padding:0 var(--gut); height:56px;
   border-bottom:1px solid transparent;
   transition:background .35s var(--ease), border-color .35s var(--ease);
@@ -200,6 +200,26 @@ button{ font:inherit; color:inherit; background:none; border:0; padding:0; curso
    marca saiu; com dois filhos o space-between do .nav resolve sozinho.
    44px de altura: a 2.5.8 pede 24 CSS px, e este e um controle que se usa
    com pressa, entao vale o alvo cheio. */
+/* Contador de posicao na apresentacao. Nasceu do reenquadramento: isto e
+   uma APRESENTACAO, nao um site — quem assiste quer saber quanto falta, e a
+   barra de 2px do topo diz isso rapido demais pra ser lida.
+   Vive ao lado da Pausa porque os dois sao controle de palco. Tabular-nums
+   trava a largura: sem isso o numero pula de lugar quando troca de
+   capitulo, e o olho registra o pulo mesmo sem saber por que. */
+.nav__count{
+  margin:0; display:flex; align-items:center; gap:.15em;
+  font:var(--label); font-size:.72rem; letter-spacing:.12em;
+  color:var(--dim);
+  font-variant-numeric:tabular-nums;
+}
+/* o capitulo atual em --accent, o total em --dim: le como "onde estou de
+   quanto", nao como um numero so */
+#navCountNow{ color:var(--accent); }
+.nav__count-sep{ color:var(--line-3); margin:0 .1em; }
+/* antes do primeiro capitulo o contador nao tem o que dizer — o travessao
+   ocupa a mesma largura de um digito, entao nada anda quando ele vira 01 */
+@media (max-width:420px){ .nav__count{ display:none; } }
+
 .nav__motion{
   display:inline-flex; align-items:center; gap:.55em;
   min-height:44px; padding:.45em .9em;
